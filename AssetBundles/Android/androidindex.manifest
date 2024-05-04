@@ -1,0 +1,23 @@
+ManifestFileVersion: 0
+CRC: 3477282830
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 68aea706e5104f6d353e726ee03257bb
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 74305dd8fd91f8e178949ffc1a984700
+HashAppended: 0
+ClassTypes:
+- Class: 114
+  Script: {fileID: 11500000, guid: 33cd2701e2874af4eb67ed5ee146eb7b, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: UMA_Core
+  ClassName: UMA.AssetBundles.AssetBundleIndex/AssetBundleIndexItem
+- AssemblyName: UMA_Core
+  ClassName: UMA.AssetBundles.AssetBundleIndex/AssetBundleIndexList
+Assets:
+- Assets/AndroidIndex.asset
+Dependencies: []

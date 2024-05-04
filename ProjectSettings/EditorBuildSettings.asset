@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/LoginScene.unity
+    guid: b3049d4882a276f4dbae81c84962e9ed
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/LoadingScene.unity
+    guid: 56173444b936aa44c9bc2dd215d8f70e
+  - enabled: 0
+    path: Assets/IRONHEAD Games/Integrations/Final IK Integration/Scenes/HomeScene_FinalIK.unity
+    guid: b54e6211477039a498f8d35ae11dc067
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/HomeScene.unity
+    guid: 59fe88bcec22b054ba717c2b27d030ab
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/World_School.unity
+    guid: b72244336204212439510723e69fa9f9
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/World_Outdoor.unity
+    guid: 5041d70b592f91c4c8b6824c2ef6484f
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/World_School_Copy.unity
+    guid: 1c6d4e3de092ce047b93c85120a1ddec
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/ShootingGame.unity
+    guid: a61faccd0a5861e4b9bbf2e22d395d93
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/HoopsArcade.unity
+    guid: 02af789c97e470445bc90847e0ca1bca
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/Multispin.unity
+    guid: 1112a734f237c7442a8dfc20dc24bf43
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/GoneWithTheFire.unity
+    guid: 7a2205e1c0ab28b4097e1ca3dd0109ef
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 3235bec8251cb7c42b33edef251b00b9, type: 2}
+    Unity.XR.OpenVR.Settings: {fileID: 11400000, guid: 51f69652ed1878540b01ce58357e257d, type: 2}
+    com.htc.upm.wave.xrsdk.xrsettings: {fileID: 11400000, guid: 5c1a4d37a03403043824ac51d5ebb89f, type: 2}
+    com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 19e6fddd35fc9324a8137299ad600718, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: b4bfdfc0272a61648990b8f24ed4daa0, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: a634003d478b29846ab2d71143bab66f, type: 2}
+    xr.sdk.mock-hmd.settings: {fileID: 11400000, guid: a795e428019b0e94d8c32afd294659e6, type: 2}

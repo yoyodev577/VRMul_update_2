@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Floor
+  - Hand
+  - Basketball
+  - A
+  - B
+  - C
+  - D
+  - Start Button
+  - Ready Button
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - FIRSTPERSON_ONLY_LAYER
+  - THIRDPERSON_ONLY_LAYER
+  - LocalAvatarHead
+  - LocalAvatarBody
+  - InHand
+  - Interactable
+  - TestTube
+  - TestTubeHolder
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
