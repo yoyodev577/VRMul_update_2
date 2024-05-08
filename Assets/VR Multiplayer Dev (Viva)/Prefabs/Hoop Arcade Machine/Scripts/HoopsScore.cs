@@ -49,7 +49,7 @@ public class HoopsScore : MonoBehaviour
     IEnumerator WaitForResetScore(){
         yield return new WaitForSeconds(1f);
         HoopsGameManager.ScoreResetBool2 = false;
-        TableButton.ScoreResetBool = false;
+        //TableButton.ScoreResetBool = false;
     }
     private void OnTriggerExit(Collider other)
     {

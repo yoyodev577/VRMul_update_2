@@ -24,6 +24,7 @@ public class HoopsGameManager : MonoBehaviour
     [SerializeField] private GameState _gameState = GameState.Default;
     private PhotonView _view;
     [SerializeField] private List<HoopsMachine> _machines;
+    [SerializeField] private List<PlayerButton> _playerButtons;
 
 
     public List<Question> questions;
@@ -55,14 +56,33 @@ public class HoopsGameManager : MonoBehaviour
     {
         _instance = this;
         _view = GetComponent<PhotonView>();
+        _playerButtons = FindObjectsOfType<PlayerButton>().ToList();
         InitGame();
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        if (!IsReadyToStart) { 
+            foreach(PlayerButton button in _playerButtons)
+            {
+                if (button.isPressed)
+                {
+                    IsReadyToStart = true; break;
+                }
+            }
+
+        }
+
         if (IsReadyToStart && !IsReadyTimerCoroutine) {
-            StartCoroutine(SetReadyTimer(timerSec));
+            //StartCoroutine(SetReadyTimer(timerSec));
+        }
+
+        if (IsGameStart) {
+            //HoopsStart();
+           // ShowQuestion();
+            
         }
 
   /*      if(TableButton.ScoreResetBool){
@@ -128,7 +148,8 @@ public class HoopsGameManager : MonoBehaviour
 
     public void HoopsStart()
     {
-        _view.RPC("PhotonHoopsStart", RpcTarget.AllBuffered);
+        if (PhotonNetwork.IsConnected)
+            _view.RPC("PhotonHoopsStart", RpcTarget.AllBuffered);
     }
 
     [PunRPC]
@@ -200,7 +221,7 @@ public class HoopsGameManager : MonoBehaviour
             // DebugUIManager.instance.ShowDebugUIMessage(allScores[i].ToString());
         }
         currentIndex = 0;
-        questionBoard.text = "Press Ready to start the game.";
+        UpdateText("Press Ready to start the game.");
         ScoreResetBool2 = true;
     }
 
@@ -232,7 +253,10 @@ public class HoopsGameManager : MonoBehaviour
         }
         return allTrue;
     }
-
+    public void UpdateText(string text) { 
+        questionBoard.text= text;
+    
+    }
 
     public void QuestionBoardCorrect(int playerNumber)
     {
@@ -264,8 +288,9 @@ public class HoopsGameManager : MonoBehaviour
         IsReadyTimerCoroutine = true;
         currentSec = seconds;
 
-        while (currentSec > 0)
+        while (currentSec >= 0)
         {
+            UpdateText(currentSec.ToString());
             yield return new WaitForSeconds(1f);
             currentSec -= 1;
         }

@@ -19,12 +19,13 @@ public class TableButton : MonoBehaviour
     #region Variable declaration
     //Variables for scene referencing
     public UnityEvent onPressed, onReleased;
+    private PhotonView _view;
 
     //Variables for button audio
-    private AudioSource sound;
-
+    public AudioSource sound;
+   
     //Variables for button movement
-    private bool isPressed;
+    public bool isPressed;
     private Vector3 startPos;
     private ConfigurableJoint joint;
 
@@ -38,28 +39,14 @@ public class TableButton : MonoBehaviour
     [SerializeField] private float threshold = .1f;
     [SerializeField] private float deadZone = .025f;
 
-    //Variables for setting machine/player number in inspector, used by Start/Reset ball buttons
-    //Please set this as 1-index, on Ready and Reset Ball Buttons
-    //On Reset Score and Start Button, please set it to 0
-    public int playerNumber;
-
-    public static bool ScoreResetBool; //false
-
-    PhotonView View;
-
-    //Static variables for checking player ready status and game status
-    public static bool[] playerReady = new bool[2];
-    public static bool gameStarted = false;
-    private static bool allPlayersReady = false;
-
     #endregion
 
     #region Unity Methods
 
     // Start is called before the first frame update
-    void Start()
+    public virtual void Start()
     {
-        View = GetComponent<PhotonView>();
+        _view = GetComponent<PhotonView>();
         sound = this.transform.GetChild(0).GetComponent<AudioSource>();
         joint = GetComponent<ConfigurableJoint>();
         buttonRenderer = this.transform.GetChild(0).GetComponent<MeshRenderer>();
@@ -71,7 +58,7 @@ public class TableButton : MonoBehaviour
         StartCoroutine(StartButtonFlash());
     }
     // Update is called on every frame
-    void Update()
+    public virtual void Update()
     {
         if (!isPressed && GetValue() + threshold >= 1)
         {
@@ -83,12 +70,12 @@ public class TableButton : MonoBehaviour
         }
         if (this.GetComponentInParent<ReadyButton>() != null)
         {
-            ButtonLightSwitch(playerReady[playerNumber-1]);
+           // ButtonLightSwitch(playerReady[playerNumber-1]);
         }
-        if (!gameStarted)
+/*        if (!gameStarted)
         {
-            HoopsGameManager._instance.ResetGame();
-        }
+            //HoopsGameManager._instance.ResetGame();
+        }*/
 
     }
     #endregion
@@ -132,10 +119,10 @@ public class TableButton : MonoBehaviour
     /// <param name="pressed">
     /// Whether the button is pressed or released. Set boolean to true in onPressed and false in onReleased.
     /// </param>
-    public void ButtonLightSwitch(bool pressed)
+    public virtual void ButtonLightSwitch(bool pressed)
     {
         if (PhotonNetwork.IsConnected)
-            View.RPC("PhotonButtonLightSwitch", RpcTarget.AllBuffered,pressed);
+            _view.RPC("PhotonButtonLightSwitch", RpcTarget.AllBuffered,pressed);
     }
     [PunRPC]
     public void PhotonButtonLightSwitch(bool pressed){
@@ -149,7 +136,7 @@ public class TableButton : MonoBehaviour
         {
             if (this.GetComponentInParent<StartButton>() != null)                           //only performs for Start Button
             {
-                if (allPlayersReady && !gameStarted)                                //Condition: all players ready but game not started 
+                /*if (allPlayersReady && !gameStarted)                                //Condition: all players ready but game not started 
                 {
                     buttonMaterialIndex = (buttonMaterialIndex + 1) % buttonMaterials.Count;
                     buttonRenderer.material = buttonMaterials[buttonMaterialIndex];
@@ -157,7 +144,7 @@ public class TableButton : MonoBehaviour
                 else
                 {
                     buttonRenderer.material = buttonMaterials[0];
-                }                                                                   //false: turns off light
+                } */                                                                  //false: turns off light
             }
             yield return new WaitForSeconds(0.5f);                              //wait for some time before executing again
         }
