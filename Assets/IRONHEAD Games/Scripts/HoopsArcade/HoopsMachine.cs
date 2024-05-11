@@ -15,6 +15,9 @@ public struct HoopsMachineStruct
 public class HoopsMachine : MonoBehaviour
 {
     public HoopsMachineStruct m_Struct;
+    [SerializeField] private HoopsScore hoopsScore;
+    [SerializeField] private int machineNum = 0;
+
 
     // Start is called before the first frame update
     void Start()
@@ -24,12 +27,9 @@ public class HoopsMachine : MonoBehaviour
         m_Struct.gate = GameObject.Find("Gate").transform;
         m_Struct.scoreDetector = GameObject.Find("ScoreDetector").transform;
         m_Struct.scoreboard = GameObject.Find("ScoreBoard").transform;
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if(m_Struct.scoreDetector != null)
+            hoopsScore = m_Struct.scoreDetector.GetComponent<HoopsScore>();
     }
     public void SetGate(bool isOpen) {
         m_Struct.gate.gameObject.SetActive(isOpen);
@@ -39,10 +39,15 @@ public class HoopsMachine : MonoBehaviour
         for (int i = 0; i < m_Struct.balls.childCount; i++)
         {
             GameObject ball = m_Struct.balls.GetChild(i).gameObject;
-            ball.transform.position = m_Struct.spawnPts.GetChild(i).position;
-           
+            ball.transform.position = m_Struct.spawnPts.GetChild(i).position;       
         }
+    }
+    public int GetScore() {
+        return hoopsScore.score;
+    }
 
+    public void ResetScore() {
+        hoopsScore.ResetScore();
     }
 
 }

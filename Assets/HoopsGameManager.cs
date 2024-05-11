@@ -12,6 +12,7 @@ using UnityEngine.InputSystem.Controls;
 public enum GameState
 {
     Default,
+    PlayersReady,
     ReadyToStart,
     StartGame,
     EndGame,
@@ -26,22 +27,30 @@ public class HoopsGameManager : MonoBehaviour
     [SerializeField] private List<HoopsMachine> _machines;
     [SerializeField] private List<PlayerButton> _playerButtons;
 
-
+    //Questions
     public List<Question> questions;
     [SerializeField] private int currentIndex = 0;
+    public Question currentQuestion;
 
-    [HideInInspector] public int[] allScores;
-    public static bool ScoreResetBool2 = false;
-
+    //Game State
+    public bool isPlayersReady = false;
     public bool IsReadyToStart = false;
     public bool IsGameStart = false;
     public bool IsGameEnd = false;
+    public bool IsReset = false;
+    public bool IsResetCoroutine = false;
 
+    public bool isPlayer1Win = false;
+
+    /// <summary>
+    /// Count Down Timer
+    /// </summary>
     public float currentSec = 0f;
     public float timerSec = 3f;
     public bool isCountDown = false;
     public bool IsReadyTimerCoroutine = false;
 
+    // Board Panel
     public TMP_Text questionBoard;
 
     public static List<string> hoopsBasketballTags = new List<string>
@@ -57,57 +66,36 @@ public class HoopsGameManager : MonoBehaviour
         _instance = this;
         _view = GetComponent<PhotonView>();
         _playerButtons = FindObjectsOfType<PlayerButton>().ToList();
+        InitQuestions();
         InitGame();
     }
 
     // Update is called once per frame
     void Update()
     {
-
-        if (!IsReadyToStart) { 
-            foreach(PlayerButton button in _playerButtons)
-            {
-                if (button.isPressed)
-                {
-                    IsReadyToStart = true; break;
-                }
-            }
-
+        // when players get ready, the timer starts.
+        if (isPlayersReady && IsReadyToStart && !IsReadyTimerCoroutine) {
+            StartCoroutine(SetReadyTimerCoroutine(timerSec));
         }
 
-        if (IsReadyToStart && !IsReadyTimerCoroutine) {
-            //StartCoroutine(SetReadyTimer(timerSec));
-        }
-
+        // after the timer, it start the machines and show questions.
         if (IsGameStart) {
-            //HoopsStart();
-           // ShowQuestion();
-            
+            HoopsStart();
+            ShowQuestion();
         }
 
-  /*      if(TableButton.ScoreResetBool){
-            ResetScoreAndQuestion();
-            
-            
-        }
-        if (TableButton.gameStarted && currentIndex == 0)
+        // when it is reset,then init the game
+        if (IsReset && !IsReadyToStart)
         {
-            currentIndex += 1;
-            ShowQuestion();
-        }*/
+            InitGame();
+        }
     }
     void InitGame() {
-        QuestionBankInitiation();
-        ResetScoreAndQuestion();
-        allScores = new int[2];
-
-        IsReadyToStart = false;
-        IsGameStart = false;
-        IsGameEnd = false;
         _gameState = GameState.Default;
+        UpdateBoardText("Press Ready to start the game.");
     }
 
-    private void QuestionBankInitiation()
+    private void InitQuestions()
     {
         questions.Add(new Question(
             "What are not major disinfectants for lab disinfection?\n" 
@@ -132,17 +120,37 @@ public class HoopsGameManager : MonoBehaviour
     }
 
 
-    public void HoopsReady()
+    //Function for Ready Button
+    public void HoopsPlayerReady() {
+        if (PhotonNetwork.IsConnected)
+            _view.RPC("PhotonHoopsPlayerReady", RpcTarget.AllBuffered);
+    }
+
+    private void PhotonHoopsPlayerReady() {
+        foreach (PlayerButton button in _playerButtons)
+        {
+            if (button.isPressed)
+            {
+                isPlayersReady = true;
+                _gameState = GameState.PlayersReady;
+            }
+        }
+    }
+
+    //Function for Start Button
+    public void HoopsReadyToStart()
     {
         if (PhotonNetwork.IsConnected)
-            _view.RPC("PhotonHoopsReady", RpcTarget.AllBuffered);
+            _view.RPC("PhotonHoopsReadyToStart", RpcTarget.AllBuffered);
     }
 
     [PunRPC]
-    public void PhotonHoopsReady()
+    private void PhotonHoopsReadyToStart()
     {
-        _gameState = GameState.ReadyToStart;
-        //playerReady[playerNumber - 1] = !playerReady[playerNumber - 1];
+        if (isPlayersReady && !IsReadyToStart) {
+            IsReadyToStart = true;
+            _gameState = GameState.ReadyToStart;
+        }
     }
 
 
@@ -150,33 +158,17 @@ public class HoopsGameManager : MonoBehaviour
     {
         if (PhotonNetwork.IsConnected)
             _view.RPC("PhotonHoopsStart", RpcTarget.AllBuffered);
+
     }
 
     [PunRPC]
-    public void PhotonHoopsStart()
+    private void PhotonHoopsStart()
     {
         _gameState = GameState.StartGame;
 
         foreach (HoopsMachine m in _machines) {
             m.m_Struct.gate.gameObject.SetActive(false);
         }
-        IsGameStart = true;
-        /*if (CheckAllPlayersReady(playerReady))          //All players ready, starts all hoops machines
-        {
-
-            for (int i = 1; i <= machineCount; i++)
-            {
-                //MachineParts[i][HoopsMachineParts.Gate].gameObject.SetActive(false);
-            }
-            gameStarted = true;
-            ScoreReset();
-        }
-        //Resets static booleans
-        for (int i = 0; i < playerReady.Length; i++)
-        {
-            playerReady[i] = false;
-        }
-        allPlayersReady = false;*/
     }
     public void HoopsReset()
     {
@@ -184,84 +176,59 @@ public class HoopsGameManager : MonoBehaviour
     }
 
     [PunRPC]
-    public void PhotonHoopsReset()
+    private void PhotonHoopsReset()
     {
-        /*if (playerNumber == 0)
-        {
-            for (int i = 0; i < machineCount; i++)
-            {
-                //BallReset(i + 1, true);
-                playerReady[i] = false;
-            }
-            ScoreReset();
-            gameStarted = false;
-            StartCoroutine(StartButtonFlash());
-        }
-        else
-        {
-            //BallReset(playerNumber, false);
-        }*/
-    }
-    private void ScoreReset()
-    {
-        //ScoreResetBool = true;
+        ResetGame();
     }
 
-    public void ResetGame()
+    private void ResetGame()
     {
-        ResetScoreAndQuestion();
-    }
-
-
-    private void ResetScoreAndQuestion()
-    {
-        for (int i = 0; i < allScores.Length; i++)
+        foreach (HoopsMachine m in _machines)
         {
-            allScores[i] = 0;
-            // DebugUIManager.instance.ShowDebugUIMessage(allScores[i].ToString());
+            m.BallReset();
+            m.SetGate(true);
+            m.ResetScore();
         }
         currentIndex = 0;
-        UpdateText("Press Ready to start the game.");
-        ScoreResetBool2 = true;
+        currentQuestion = null;
+
+        isPlayersReady = false;
+        IsReadyToStart = false;
+        IsGameStart = false;
+        IsGameEnd = false;
+        isPlayer1Win = false;
+
+        IsReset = true;
+        if(!IsResetCoroutine)
+        StartCoroutine(ResetCoroutine());
     }
 
     private void ShowResult()
     {
-        int playerNumberOffset = 1;
-        questionBoard.text =
-            "The game has ended.\n" +
-            "Player 1 Score: " + allScores[0] + "\n" +
-            "Player 2 Score: " + allScores[1] + "\n" +
-            "Player " + ((Array.IndexOf(allScores, allScores.Max())) + playerNumberOffset).ToString() + " wins!";
+        isPlayer1Win = _machines[0].GetScore() > _machines[1].GetScore() ? true : false;
+
+        questionBoard.text = "The game has ended.\n" +
+                        "Player 1 Score:" + _machines[0].GetScore() +"\n" +
+                        "Player 2 Score: " + _machines[1].GetScore() +"\n";
+
+
+        if (isPlayer1Win)
+            questionBoard.text += "Player 1 Wins";
+        else
+            questionBoard.text += "Player 2 Wins";
 
     }
 
-    private bool CheckAllPlayersReady(bool[] checklist)
-    {
-        bool allTrue = false;
-        foreach (bool ready in checklist)
-        {
-            if (ready)
-            {
-                allTrue = true;
-            }
-            else
-            {
-                allTrue = false;
-                break;
-            }
-        }
-        return allTrue;
-    }
-    public void UpdateText(string text) { 
+    private void UpdateBoardText(string text) { 
         questionBoard.text= text;
     
     }
-
-    public void QuestionBoardCorrect(int playerNumber)
+    public void UpdateQuestionBoard(int playerNumber)
     {
-        questionBoard.text = "Player " + playerNumber + " has got it correct. The correct answer is " + questions[currentIndex].answerText;
-        StartCoroutine(UpdateTextBoard());
+        questionBoard.text = "Player " + playerNumber + 
+            " has got it correct. The correct answer is " + questions[currentIndex].answerText;
+
+        StartCoroutine(SetQuestionBoardCoroutine());
     }
 
     private void ShowQuestion()
@@ -269,13 +236,13 @@ public class HoopsGameManager : MonoBehaviour
         questionBoard.text = "Question " + currentIndex + ":\n" + questions[currentIndex].questionText;
     }
 
-
-    IEnumerator UpdateTextBoard()
+    IEnumerator SetQuestionBoardCoroutine()
     {
         yield return new WaitForSeconds(2f);
         currentIndex += 1;
         if (currentIndex > questions.Count)
         {
+            IsGameEnd = true;
             ShowResult();
         }
         else
@@ -284,13 +251,14 @@ public class HoopsGameManager : MonoBehaviour
         }
     }
 
-    IEnumerator SetReadyTimer(float seconds) {
+    // Enable Ready Timer
+    IEnumerator SetReadyTimerCoroutine(float seconds) {
         IsReadyTimerCoroutine = true;
         currentSec = seconds;
 
         while (currentSec >= 0)
         {
-            UpdateText(currentSec.ToString());
+            UpdateBoardText(currentSec.ToString());
             yield return new WaitForSeconds(1f);
             currentSec -= 1;
         }
@@ -304,6 +272,13 @@ public class HoopsGameManager : MonoBehaviour
         }
 
 
+    }
+
+    IEnumerator ResetCoroutine() {
+        IsResetCoroutine = true;
+        yield return new WaitForSeconds(2f);
+        IsReset = false;
+        IsResetCoroutine = false;
     }
 
 }
