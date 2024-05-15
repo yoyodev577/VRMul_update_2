@@ -39,6 +39,8 @@ public class TableButton : MonoBehaviour
     [SerializeField] private float threshold = .1f;
     [SerializeField] private float deadZone = .025f;
 
+    [SerializeField] private bool IsButtonCoroutine = false;
+
     #endregion
 
     #region Unity Methods
@@ -55,27 +57,20 @@ public class TableButton : MonoBehaviour
             buttonRenderer.material = buttonMaterials[buttonMaterialIndex];
         }
         startPos = transform.localPosition;
-        StartCoroutine(StartButtonFlash());
+
+        onPressed.AddListener(() => FlashButton(isPressed));
+        onPressed.AddListener(()=>sound.Play());
+        
     }
     // Update is called on every frame
     public virtual void Update()
     {
-        if (!isPressed && GetValue() + threshold >= 1)
+        if(!IsButtonCoroutine)
         {
-            Pressed();
+            StartCoroutine(ButtonCoroutine());
         }
-        if (isPressed && GetValue() - threshold <= 0)
-        {
-            Released();
-        }
-        if (this.GetComponentInParent<ReadyButton>() != null)
-        {
-           // ButtonLightSwitch(playerReady[playerNumber-1]);
-        }
-/*        if (!gameStarted)
-        {
-            //HoopsGameManager._instance.ResetGame();
-        }*/
+
+        Debug.Log(this.gameObject.name + " IsPressed : " + isPressed);
 
     }
     #endregion
@@ -93,61 +88,31 @@ public class TableButton : MonoBehaviour
     }
     #endregion
 
-    /// <summary>
-    /// This region stores all events activated by the button press.
-    /// Drag the gameObject that contains the script itself (the "press" child in corresponding buttons)
-    /// into the onPressed/onReleased events to trigger Hooops Methods.
-    /// </summary>
-    #region Invoking Events
-    private void Pressed()
-    {
-        isPressed = true;
-        onPressed.Invoke();
-        sound.Play();
-    }
-
-    private void Released()
-    {
-        isPressed = false;
-        onReleased.Invoke();
-    }
-
-    /// <summary>
-    /// Used by all Buttons. 
-    /// Toggles between materials of the button.
-    /// </summary>
-    /// <param name="pressed">
-    /// Whether the button is pressed or released. Set boolean to true in onPressed and false in onReleased.
-    /// </param>
-    public virtual void ButtonLightSwitch(bool pressed)
-    {
-        if (PhotonNetwork.IsConnected)
-            _view.RPC("PhotonButtonLightSwitch", RpcTarget.AllBuffered,pressed);
-    }
-    [PunRPC]
-    public void PhotonButtonLightSwitch(bool pressed){
-        buttonRenderer.material = buttonMaterials[Convert.ToInt32(pressed)];
-    }
-    #endregion
-
-    IEnumerator StartButtonFlash()
-    {
-        while (true)        //loops indefinitely
-        {
-            if (this.GetComponentInParent<StartButton>() != null)                           //only performs for Start Button
-            {
-                /*if (allPlayersReady && !gameStarted)                                //Condition: all players ready but game not started 
-                {
-                    buttonMaterialIndex = (buttonMaterialIndex + 1) % buttonMaterials.Count;
-                    buttonRenderer.material = buttonMaterials[buttonMaterialIndex];
-                }                                                                   //true: switches light
-                else
-                {
-                    buttonRenderer.material = buttonMaterials[0];
-                } */                                                                  //false: turns off light
-            }
-            yield return new WaitForSeconds(0.5f);                              //wait for some time before executing again
+    // recording the action of pressing button within 0.5 seconds
+    IEnumerator ButtonCoroutine() {
+        IsButtonCoroutine = true;
+        if (GetValue() + threshold >= 1f) {
+            isPressed = !isPressed;
+            onPressed.Invoke();
         }
+        if (PhotonNetwork.IsConnected)
+            _view.RPC("FlashButton",RpcTarget.AllBuffered,isPressed);
+
+        FlashButton(isPressed);
+        yield return new WaitForSeconds(0.5f);
+        IsButtonCoroutine = false;
+    
+    }
+
+    [PunRPC]
+    public void FlashButton(bool isPressed) {
+
+        if (buttonMaterials.Count < 1) return;
+
+        if (isPressed)
+            buttonRenderer.material = buttonMaterials[1];
+        else
+            buttonRenderer.material = buttonMaterials[0];
     }
 
 }

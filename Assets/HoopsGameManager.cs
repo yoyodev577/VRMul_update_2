@@ -22,7 +22,6 @@ public enum GameState
 public class HoopsGameManager : MonoBehaviour
 {
     public static HoopsGameManager _instance;
-    [SerializeField] private GameState _gameState = GameState.Default;
     private PhotonView _view;
     [SerializeField] private List<HoopsMachine> _machines;
     [SerializeField] private List<PlayerButton> _playerButtons;
@@ -33,6 +32,7 @@ public class HoopsGameManager : MonoBehaviour
     public Question currentQuestion;
 
     //Game State
+    [SerializeField] private GameState _gameState = GameState.Default;
     public bool isPlayersReady = false;
     public bool IsReadyToStart = false;
     public bool IsGameStart = false;
@@ -47,7 +47,6 @@ public class HoopsGameManager : MonoBehaviour
     /// </summary>
     public float currentSec = 0f;
     public float timerSec = 3f;
-    public bool isCountDown = false;
     public bool IsReadyTimerCoroutine = false;
 
     // Board Panel
@@ -82,6 +81,11 @@ public class HoopsGameManager : MonoBehaviour
         if (IsGameStart) {
             HoopsStart();
             ShowQuestion();
+        }
+
+        if(!IsReset && Input.GetKeyDown(KeyCode.R))
+        {
+            HoopsReset();
         }
 
         // when it is reset,then init the game
@@ -124,8 +128,11 @@ public class HoopsGameManager : MonoBehaviour
     public void HoopsPlayerReady() {
         if (PhotonNetwork.IsConnected)
             _view.RPC("PhotonHoopsPlayerReady", RpcTarget.AllBuffered);
+
+        PhotonHoopsPlayerReady();
     }
 
+    [PunRPC]
     private void PhotonHoopsPlayerReady() {
         foreach (PlayerButton button in _playerButtons)
         {
@@ -142,6 +149,8 @@ public class HoopsGameManager : MonoBehaviour
     {
         if (PhotonNetwork.IsConnected)
             _view.RPC("PhotonHoopsReadyToStart", RpcTarget.AllBuffered);
+
+        PhotonHoopsReadyToStart();
     }
 
     [PunRPC]
@@ -159,6 +168,7 @@ public class HoopsGameManager : MonoBehaviour
         if (PhotonNetwork.IsConnected)
             _view.RPC("PhotonHoopsStart", RpcTarget.AllBuffered);
 
+        PhotonHoopsStart();
     }
 
     [PunRPC]
@@ -172,7 +182,10 @@ public class HoopsGameManager : MonoBehaviour
     }
     public void HoopsReset()
     {
+        if(PhotonNetwork.IsConnected)
         _view.RPC("PhotonHoopsReset", RpcTarget.AllBuffered);
+
+        PhotonHoopsReset();
     }
 
     [PunRPC]
@@ -233,6 +246,7 @@ public class HoopsGameManager : MonoBehaviour
 
     private void ShowQuestion()
     {
+        currentQuestion = questions[currentIndex];
         questionBoard.text = "Question " + currentIndex + ":\n" + questions[currentIndex].questionText;
     }
 
