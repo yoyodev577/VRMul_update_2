@@ -22,14 +22,7 @@ public class HoopsMachine : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_Struct.balls = GameObject.Find("Basketballs").transform;
-        m_Struct.spawnPts = GameObject.Find("Spawnpoints").transform;
-        m_Struct.gate = GameObject.Find("Gate").transform;
-        m_Struct.scoreDetector = GameObject.Find("ScoreDetector").transform;
-        m_Struct.scoreboard = GameObject.Find("ScoreBoard").transform;
-
-        if(m_Struct.scoreDetector != null)
-            hoopsScore = m_Struct.scoreDetector.GetComponent<HoopsScore>();
+        hoopsScore = m_Struct.scoreDetector.GetComponent<HoopsScore>();
     }
     public void SetGate(bool isOpen) {
         m_Struct.gate.gameObject.SetActive(isOpen);
