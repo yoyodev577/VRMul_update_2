@@ -8,8 +8,8 @@ using UnityEngine.UI;
 public class MiniGameManager : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
-    private string[] RoomName = {"basketball","Multispin","GunGame","GoneWithTheFire"};
-    private string[] sceneArray = {"HoopsArcade","Multispin","ShootingGame","GoneWithTheFire"};
+    [SerializeField] private string[] RoomName = {"basketball","Multispin","GunGame","GoneWithTheFire"};
+    [SerializeField] private string[] sceneArray = {"HoopsArcade_update","Multispin","ShootingGame","GoneWithTheFire"};
 
     public TextMeshProUGUI[] sceneUserNumber;
     private int currentScene = 0;

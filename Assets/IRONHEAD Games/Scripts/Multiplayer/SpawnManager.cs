@@ -60,7 +60,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.XR.Interaction.Toolkit;
 public class SpawnManager : MonoBehaviourPunCallbacks
 {
-    public Transform[] spawnPositions;
+    public Transform spawnPosition;
 
     #region Unity Methods
     // Start is called before the first frame update
@@ -78,21 +78,8 @@ public class SpawnManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom == null)
             return;
 
-        int randomSpawnPoint = Random.Range(0, spawnPositions.Length - 1);
-        Vector3 randomInstantiatePosition = spawnPositions[randomSpawnPoint].position;
+        Vector3 randomInstantiatePosition = spawnPosition.position;
         PhotonNetwork.Instantiate("NetworkedVRPlayerPrefab", randomInstantiatePosition, Quaternion.identity, 0);
-        // if (MultiplayerVRConstants.USE_FINALIK)
-        // {
-        //     PhotonNetwork.Instantiate("NetworkedVRPlayerPrefab_FinalIK", randomInstantiatePosition, Quaternion.identity, 0);
-
-        // }else if (MultiplayerVRConstants.USE_FINALIK_UMA2)
-        // {
-        //     PhotonNetwork.Instantiate("NetworkedVRPlayerPrefab_FinalIK_UMA2", randomInstantiatePosition, Quaternion.identity, 0);
-        // }
-        // else
-        // {
-        //     PhotonNetwork.Instantiate("NetworkedVRPlayerPrefab", randomInstantiatePosition, Quaternion.identity, 0);
-        // }
     }
     #endregion
 }

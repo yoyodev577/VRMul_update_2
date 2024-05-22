@@ -29,9 +29,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/IRONHEAD Games/Scenes/ShootingGame.unity
     guid: a61faccd0a5861e4b9bbf2e22d395d93
-  - enabled: 1
+  - enabled: 0
     path: Assets/IRONHEAD Games/Scenes/HoopsArcade.unity
     guid: 02af789c97e470445bc90847e0ca1bca
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/Yoyo/HoopsArcade_update.unity
+    guid: 866578c806862484e812a18ed41ac25f
   - enabled: 1
     path: Assets/IRONHEAD Games/Scenes/Multispin.unity
     guid: 1112a734f237c7442a8dfc20dc24bf43
