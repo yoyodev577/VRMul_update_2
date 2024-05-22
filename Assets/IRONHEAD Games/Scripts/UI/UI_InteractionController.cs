@@ -52,11 +52,11 @@ public class UI_InteractionController : MonoBehaviour
         ////Activating UI Canvas Gameobject by default for home scene only
         if (SceneManager.GetActiveScene().name == "HomeScene_FinalIK")
         {
-            UIPanels_Gameobject.SetActive(true);
+            //UIPanels_Gameobject.SetActive(true);
         }
         else
         {
-            UIPanels_Gameobject.SetActive(false);
+            //UIPanels_Gameobject.SetActive(false);
         }
 
         //Activating the Avatar Selection Platform Gameobject

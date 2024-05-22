@@ -13,8 +13,9 @@ public class MiniGameManager : MonoBehaviourPunCallbacks
 
     public TextMeshProUGUI[] sceneUserNumber;
     private int currentScene = 0;
+    private bool IsJoined = false;
 
-    private List<RoomInfo> currentRoomList; //create a empty roomlist
+    [SerializeField] private List<RoomInfo> currentRoomList; //create a empty roomlist
     void Start()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
@@ -31,23 +32,27 @@ public class MiniGameManager : MonoBehaviourPunCallbacks
 
     public void onClickCreateRoom(string btnName){
         // DebugUIManager.instance.ShowDebugUIMessage(GameObject.Find(btnName).GetComponent<SceneButton>().scene_number.ToString());
-        if(GameObject.Find(btnName).GetComponent<SceneButton>().click == 0){
+        if(!IsJoined && GameObject.Find(btnName).GetComponent<SceneButton>().click == 0){
             GameObject.Find(btnName).GetComponent<SceneButton>().click = 1;
             currentScene = GameObject.Find(btnName).GetComponent<SceneButton>().scene_number -1;
             RoomOptions roomOptions = new RoomOptions();
             roomOptions.MaxPlayers = 8;
             PhotonNetwork.CreateRoom(RoomName[currentScene],roomOptions,null);
+            Debug.Log("Create Room for "+ RoomName[currentScene]);
+            IsJoined = true;
             
         }else{
             // DebugUIManager.instance.ShowDebugUIMessage("Loading...");
             currentScene = GameObject.Find(btnName).GetComponent<SceneButton>().scene_number -1;
             PhotonNetwork.JoinRoom(RoomName[currentScene]);
+            Debug.Log("Join Room " + RoomName[currentScene]);
+            IsJoined = true;
         }
     }
 
     public override void OnJoinedRoom(){
         SceneLoader.instance.LoadScene(sceneArray[currentScene], true);
-        
+        Debug.Log("Join Room " + RoomName[currentScene]);
 
     }
 
@@ -64,14 +69,15 @@ public class MiniGameManager : MonoBehaviourPunCallbacks
     }
 
     void Update(){
-        foreach(RoomInfo roomInfo in currentRoomList){
+
+/*        foreach(RoomInfo roomInfo in currentRoomList){
             for(int i =0; i<4; i++){
                 if (roomInfo.Name.Contains(RoomName[i])){
                     sceneUserNumber[i].text = roomInfo.PlayerCount+"/ 8";
                     break;
                 }
             }
-        }
+        }*/
         
     }
 
