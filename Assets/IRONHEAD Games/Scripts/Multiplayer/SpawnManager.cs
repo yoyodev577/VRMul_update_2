@@ -78,8 +78,7 @@ public class SpawnManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom == null)
             return;
 
-        Vector3 randomInstantiatePosition = spawnPosition.position;
-        PhotonNetwork.Instantiate("NetworkedVRPlayerPrefab", randomInstantiatePosition, Quaternion.identity, 0);
+        PhotonNetwork.Instantiate("NetworkedVRPlayerPrefab", spawnPosition.position, spawnPosition.localRotation, 0);
     }
     #endregion
 }

@@ -129,11 +129,12 @@ public class HoopsGameManager : MonoBehaviour
         if (PhotonNetwork.IsConnected)
             _view.RPC("PhotonHoopsPlayerReady", RpcTarget.AllBuffered);
 
-        PhotonHoopsPlayerReady();
+        //PhotonHoopsPlayerReady();
     }
 
     [PunRPC]
     private void PhotonHoopsPlayerReady() {
+        Debug.Log("---Waiting For Players Ready---");
         foreach (PlayerButton button in _playerButtons)
         {
             if (button.isPressed)
@@ -150,12 +151,13 @@ public class HoopsGameManager : MonoBehaviour
         if (PhotonNetwork.IsConnected)
             _view.RPC("PhotonHoopsReadyToStart", RpcTarget.AllBuffered);
 
-        PhotonHoopsReadyToStart();
+        //PhotonHoopsReadyToStart();
     }
 
     [PunRPC]
     private void PhotonHoopsReadyToStart()
     {
+        Debug.Log("---Game Ready To Start---");
         if (isPlayersReady && !IsReadyToStart) {
             IsReadyToStart = true;
             _gameState = GameState.ReadyToStart;
@@ -168,7 +170,7 @@ public class HoopsGameManager : MonoBehaviour
         if (PhotonNetwork.IsConnected)
             _view.RPC("PhotonHoopsStart", RpcTarget.AllBuffered);
 
-        PhotonHoopsStart();
+        //PhotonHoopsStart();
     }
 
     [PunRPC]
@@ -185,7 +187,7 @@ public class HoopsGameManager : MonoBehaviour
         if(PhotonNetwork.IsConnected)
         _view.RPC("PhotonHoopsReset", RpcTarget.AllBuffered);
 
-        PhotonHoopsReset();
+        //PhotonHoopsReset();
     }
 
     [PunRPC]

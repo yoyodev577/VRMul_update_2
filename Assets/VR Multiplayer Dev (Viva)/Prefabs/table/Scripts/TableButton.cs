@@ -30,7 +30,7 @@ public class TableButton : MonoBehaviour
     private ConfigurableJoint joint;
 
     //Variables for flashing buttons
-    private MeshRenderer buttonRenderer;
+    [SerializeField] private MeshRenderer buttonRenderer;
     private int buttonMaterialIndex;
     [SerializeField]
     private List<Material> buttonMaterials;
@@ -58,19 +58,13 @@ public class TableButton : MonoBehaviour
         }
         startPos = transform.localPosition;
 
-        onPressed.AddListener(() => FlashButton(isPressed));
-        onPressed.AddListener(()=>sound.Play());
+        //onPressed.AddListener(() => FlashButton(isPressed));
+        //onPressed.AddListener(()=>sound.Play());
         
     }
     // Update is called on every frame
     public virtual void Update()
     {
-        if(!IsButtonCoroutine)
-        {
-            StartCoroutine(ButtonCoroutine());
-        }
-
-        Debug.Log(this.gameObject.name + " IsPressed : " + isPressed);
 
     }
     #endregion
@@ -96,12 +90,23 @@ public class TableButton : MonoBehaviour
             onPressed.Invoke();
         }
         if (PhotonNetwork.IsConnected)
-            _view.RPC("FlashButton",RpcTarget.AllBuffered,isPressed);
+            _view.RPC("FlashButton", RpcTarget.AllBuffered, isPressed);
 
         FlashButton(isPressed);
+
         yield return new WaitForSeconds(0.5f);
         IsButtonCoroutine = false;
     
+    }
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        if (!IsButtonCoroutine)
+        {
+            StartCoroutine(ButtonCoroutine());
+        }
+
+        Debug.Log(this.gameObject.name + " IsPressed : " + isPressed);
     }
 
     [PunRPC]
