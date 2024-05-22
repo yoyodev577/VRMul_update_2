@@ -114,7 +114,7 @@ public class UI_InteractionController : MonoBehaviour
           
 
             //Activating the UI Canvas Gameobject
-            //UIPanels_Gameobject.SetActive(true);
+            UIPanels_Gameobject.SetActive(true);
 
             //Deactivating Informative UI by default
             if (InformativeUI_Gameobject != null)
@@ -144,7 +144,7 @@ public class UI_InteractionController : MonoBehaviour
             BaseController.GetComponent<XRDirectInteractor>().enabled = true;
 
             //De-Activating the UI Canvas Gameobject
-          //  UIPanels_Gameobject.SetActive(false);
+            UIPanels_Gameobject.SetActive(false);
 
             //Activating Informative UI by default
             if (InformativeUI_Gameobject != null)

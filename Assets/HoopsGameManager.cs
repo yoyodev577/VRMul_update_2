@@ -83,11 +83,6 @@ public class HoopsGameManager : MonoBehaviour
             ShowQuestion();
         }
 
-        if(!IsReset && Input.GetKeyDown(KeyCode.R))
-        {
-            HoopsReset();
-        }
-
         // when it is reset,then init the game
         if (IsReset && !IsReadyToStart)
         {
@@ -170,12 +165,13 @@ public class HoopsGameManager : MonoBehaviour
         if (PhotonNetwork.IsConnected)
             _view.RPC("PhotonHoopsStart", RpcTarget.AllBuffered);
 
-        //PhotonHoopsStart();
     }
 
     [PunRPC]
     private void PhotonHoopsStart()
     {
+        Debug.Log("---Start the game---");
+
         _gameState = GameState.StartGame;
 
         foreach (HoopsMachine m in _machines) {
@@ -187,12 +183,12 @@ public class HoopsGameManager : MonoBehaviour
         if(PhotonNetwork.IsConnected)
         _view.RPC("PhotonHoopsReset", RpcTarget.AllBuffered);
 
-        //PhotonHoopsReset();
     }
 
     [PunRPC]
     private void PhotonHoopsReset()
     {
+        Debug.Log("---Game Reset---");
         ResetGame();
     }
 
