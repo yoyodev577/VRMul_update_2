@@ -10,6 +10,9 @@ using Photon.Pun;
 public class MultiSpin : MonoBehaviour
 {
     #region Variable Declaration
+
+    public int playerNum = 0;
+
     //Spinner variables
     [SerializeField]
     private GameObject spinner;
@@ -29,7 +32,7 @@ public class MultiSpin : MonoBehaviour
     private int spinnerPosCount;
     private bool[] testTubePlaceholder;
     private List<bool[]> correctArrangement;
-    private bool isBalanced = false;
+    public bool isBalanced = false;
     //Explosion variables
     [SerializeField]
     private ParticleSystem explosion;
@@ -326,13 +329,15 @@ public class MultiSpin : MonoBehaviour
         {
             whichHasTestTube += "TestTube " + i + ": " + testTubePlaceholder[i].ToString() + "\n";
         }
-        debug.text = "Multispin variables:\n" +
+        String text = "Multispin variables:\n" +
             "isOpened: " + isOpened.ToString() + "\n" +
             "isTriggered: " + isTriggered.ToString() + "\n" +
             "isAwake: " + isAwake.ToString() + "\n" +
             "TestTube in machine: " + CheckTestTubeAmount().ToString() + "\n" +
             "Which holes has test tube? \n" + whichHasTestTube + "\n" +
             "Is the test tubes balanced? " + isBalanced.ToString();
+
+        Debug.Log(text);
     }
     #endregion
 

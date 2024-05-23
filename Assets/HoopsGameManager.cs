@@ -73,8 +73,8 @@ public class HoopsGameManager : MonoBehaviour
     void Update()
     {
         // when players get ready, the timer starts.
-        if (isPlayersReady && IsReadyToStart && !IsReadyTimerCoroutine) {
-            StartCoroutine(SetReadyTimerCoroutine(timerSec));
+        if (isPlayersReady && IsReadyToStart) {
+            StartTimer();
         }
 
         // after the timer, it start the machines and show questions.
@@ -93,6 +93,8 @@ public class HoopsGameManager : MonoBehaviour
         _gameState = GameState.Default;
         UpdateBoardText("Press Ready to start the game.");
     }
+
+
 
     private void InitQuestions()
     {
@@ -191,6 +193,22 @@ public class HoopsGameManager : MonoBehaviour
         Debug.Log("---Game Reset---");
         ResetGame();
     }
+
+
+    public void StartTimer() {
+        if (PhotonNetwork.IsConnected)
+            _view.RPC("PhotonStartTimer", RpcTarget.AllBuffered);
+
+    }
+
+    [PunRPC]
+    private void PhotonStartTimer()
+    {
+        if(!IsReadyTimerCoroutine)
+        StartCoroutine(SetReadyTimerCoroutine(timerSec));
+    }
+
+
 
     private void ResetGame()
     {
