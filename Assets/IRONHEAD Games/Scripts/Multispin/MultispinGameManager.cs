@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class MultispinGameManager : MonoBehaviour
 {
-    public static MultispinGameManager Instance;
+    public static MultispinGameManager instance;
     private PhotonView _view;
 
     [SerializeField] private List<PlayerButton> _playerButtons;
@@ -31,7 +31,7 @@ public class MultispinGameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Instance = this;
+        instance = this;
         _view = GetComponent<PhotonView>();
         _playerButtons = FindObjectsOfType<PlayerButton>().ToList();
         _multiSpin = FindObjectsOfType<MultiSpin>().ToList();
@@ -82,8 +82,6 @@ public class MultispinGameManager : MonoBehaviour
     {
         if (PhotonNetwork.IsConnected)
             _view.RPC("PhotonReadyToStart", RpcTarget.AllBuffered);
-
-        //PhotonHoopsReadyToStart();
     }
 
     [PunRPC]
@@ -111,6 +109,7 @@ public class MultispinGameManager : MonoBehaviour
         UpdateBoardText("Game Starts");
 
         _gameState = GameState.StartGame;
+        IsGameStart = true;
 
     }
 
@@ -122,6 +121,10 @@ public class MultispinGameManager : MonoBehaviour
 
     [PunRPC]
     private void PhotonEndGame() {
+
+
+        _gameState = GameState.EndGame;
+        IsGameEnd = true;
         ShowResult();
     }
 
@@ -138,18 +141,33 @@ public class MultispinGameManager : MonoBehaviour
     private void PhotonResetGame()
     {
         Debug.Log("---Game Reset---");
-        ResetGame();
+        if(!IsResetCoroutine)
+            StartCoroutine(ResetCoroutine());
     }
 
     private void ShowResult() {
         string text = "";
-        foreach (MultiSpin m in _multiSpin) {
-            if (m.isBalanced) {
-                text = "The game has ended.\nPlayer :" + m.playerNum + " wins";
-            }
-            UpdateBoardText(text);
+
+        if (_multiSpin[0].isBalanced && !_multiSpin[1].isBalanced)
+        {
+            text = "The game has ended.\nPlayer :" + _multiSpin[0].playerNum + " wins";
+
         }
-    
+        else if (!_multiSpin[0].isBalanced && _multiSpin[1].isBalanced) {
+
+            text = "The game has ended.\nPlayer :" + _multiSpin[1].playerNum + " wins";
+        }
+        else if (_multiSpin[0].isBalanced && _multiSpin[1].isBalanced)
+        {
+            text = "The game has ended.Both players win!";
+        }
+        else if (!_multiSpin[0].isBalanced && !_multiSpin[1].isBalanced)
+        {
+            text = "The game has ended.Both players lose :(!";
+        }
+
+
+        UpdateBoardText(text);
     }
 
 
@@ -185,7 +203,13 @@ public class MultispinGameManager : MonoBehaviour
     IEnumerator ResetCoroutine()
     {
         IsResetCoroutine = true;
-        yield return new WaitForSeconds(2f);
+        isPlayersReady = false;
+        IsReadyToStart = false;
+        IsGameStart = false;
+        IsGameEnd = false;
+        IsReadyTimerCoroutine = false;
+        InitGame();
+        yield return new WaitForSeconds(1f);
         IsReset = false;
         IsResetCoroutine = false;
     }

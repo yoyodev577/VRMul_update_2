@@ -278,11 +278,12 @@ GameObject:
   m_Component:
   - component: {fileID: 72951247}
   - component: {fileID: 72951250}
-  - component: {fileID: 72951249}
   - component: {fileID: 72951248}
+  - component: {fileID: 72951249}
+  - component: {fileID: 72951251}
   m_Layer: 0
   m_Name: RightHand Base Controller
-  m_TagString: Untagged
+  m_TagString: Hand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -616,6 +617,33 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: 875253871413052681, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   m_ButtonPressPoint: 0.5
+--- !u!54 &72951251
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72951246}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &85977609
 GameObject:
   m_ObjectHideFlags: 0
@@ -4759,11 +4787,12 @@ GameObject:
   m_Component:
   - component: {fileID: 723228228}
   - component: {fileID: 723228229}
-  - component: {fileID: 723228231}
   - component: {fileID: 723228230}
+  - component: {fileID: 723228232}
+  - component: {fileID: 723228231}
   m_Layer: 0
   m_Name: Right Hand Parent
-  m_TagString: Untagged
+  m_TagString: Hand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4890,55 +4919,54 @@ MonoBehaviour:
   WhichHand: Right
   animL: {fileID: 1455398990}
   animR: {fileID: 38449130}
---- !u!114 &723228231
-MonoBehaviour:
+--- !u!135 &723228231
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 723228227}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4859f98281af9548aecb9dca3c46ec7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gripInputAction:
-    m_Name: Grip Input
-    m_Type: 0
-    m_ExpectedControlType: Analog
-    m_Id: 9975f21e-239e-4d3a-82e5-9f5953de6e6d
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: f867b90f-9b3f-43f4-a574-db9fd6b28b39
-      m_Path: <ViveFocus3Controller>{RightHand}/grip
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Grip Input
-      m_Flags: 0
-    m_Flags: 0
-  triggerInputAction:
-    m_Name: Trigger Input
-    m_Type: 0
-    m_ExpectedControlType: Analog
-    m_Id: 9e89ecca-1309-4cf2-9d8f-664c0a7a660a
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: e9e66fd1-87b5-4cc7-a97a-765fcec7c2af
-      m_Path: <ViveFocus3Controller>{RightHand}/trigger
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Trigger Input
-      m_Flags: 0
-    m_Flags: 0
-  WhichHand: Right
-  animL: {fileID: 1455398990}
-  animR: {fileID: 38449130}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &723228232
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 723228227}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &724981295
 GameObject:
   m_ObjectHideFlags: 0
@@ -5289,11 +5317,12 @@ GameObject:
   m_Component:
   - component: {fileID: 938922643}
   - component: {fileID: 938922644}
-  - component: {fileID: 938922645}
   - component: {fileID: 938922646}
+  - component: {fileID: 938922648}
+  - component: {fileID: 938922647}
   m_Layer: 0
   m_Name: Left Hand Parent
-  m_TagString: Untagged
+  m_TagString: Hand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5335,55 +5364,6 @@ MonoBehaviour:
   AvatarSelectionPlatform_Gameobject: {fileID: 0}
   positionOffsetForUICanvasGameobject: {x: 0, y: 0, z: 0}
   alwaysAppearInFront: 0
---- !u!114 &938922645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 938922642}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4859f98281af9548aecb9dca3c46ec7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gripInputAction:
-    m_Name: Grip Input
-    m_Type: 0
-    m_ExpectedControlType: Analog
-    m_Id: 9975f21e-239e-4d3a-82e5-9f5953de6e6d
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: b63c7d9b-023b-4cee-8cb2-821887684c55
-      m_Path: <XRController>{LeftHand}/grip
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Grip Input
-      m_Flags: 0
-    m_Flags: 0
-  triggerInputAction:
-    m_Name: Trigger Input
-    m_Type: 0
-    m_ExpectedControlType: Analog
-    m_Id: 9e89ecca-1309-4cf2-9d8f-664c0a7a660a
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: e9e66fd1-87b5-4cc7-a97a-765fcec7c2af
-      m_Path: <XRController>{LeftHand}/trigger
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Trigger Input
-      m_Flags: 0
-    m_Flags: 0
-  WhichHand: Left
-  animL: {fileID: 1455398990}
-  animR: {fileID: 38449130}
 --- !u!114 &938922646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5433,6 +5413,54 @@ MonoBehaviour:
   WhichHand: Left
   animL: {fileID: 1455398990}
   animR: {fileID: 38449130}
+--- !u!54 &938922647
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938922642}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!135 &938922648
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 938922642}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &942577687
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10484,11 +10512,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1631619202}
   - component: {fileID: 1631619205}
-  - component: {fileID: 1631619204}
   - component: {fileID: 1631619203}
+  - component: {fileID: 1631619204}
+  - component: {fileID: 1631619206}
   m_Layer: 0
   m_Name: LeftHand Base Controller
-  m_TagString: Untagged
+  m_TagString: Hand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10822,6 +10851,33 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: 7779212132400271959, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   m_ButtonPressPoint: 0.5
+--- !u!54 &1631619206
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631619201}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &1647755346
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10830,6 +10886,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 690864919}
     m_Modifications:
+    - target: {fileID: 5750795163943157792, guid: 2a7cc21b50539b145affc701d65036ec, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.048
+      objectReference: {fileID: 0}
+    - target: {fileID: 5750795163943157795, guid: 2a7cc21b50539b145affc701d65036ec, type: 3}
+      propertyPath: m_TagString
+      value: Hand
+      objectReference: {fileID: 0}
     - target: {fileID: 5750795164620176152, guid: 2a7cc21b50539b145affc701d65036ec, type: 3}
       propertyPath: m_Name
       value: AvatarMan (1)
@@ -10877,6 +10941,10 @@ PrefabInstance:
     - target: {fileID: 5750795164620176153, guid: 2a7cc21b50539b145affc701d65036ec, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5750795164666017892, guid: 2a7cc21b50539b145affc701d65036ec, type: 3}
+      propertyPath: m_TagString
+      value: Hand
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

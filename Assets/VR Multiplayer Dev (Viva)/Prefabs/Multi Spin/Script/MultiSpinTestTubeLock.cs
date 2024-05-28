@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 
 public class MultiSpinTestTubeLock : MonoBehaviour
 {
-    public int playerIndex = 0;
     [SerializeField]
     private Transform spinner;
     public bool isOccupied = false;

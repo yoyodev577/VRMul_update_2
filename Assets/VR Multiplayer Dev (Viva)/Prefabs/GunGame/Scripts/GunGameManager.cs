@@ -4,13 +4,24 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using TMPro;
 using Photon.Pun;
+using System.Linq;
 public class GunGameManager : MonoBehaviour
 {
-    PhotonView View;
+    public static GunGameManager instance;
+    private PhotonView View;
 
     [SerializeField] private AudioClip countSound;
     [SerializeField] private AudioClip correctSound;
     [SerializeField] private AudioSource source;
+
+    [SerializeField] private List<PlayerButton> _playerButtons;
+    [SerializeField] private GameState _gameState = GameState.Default;
+    public bool isPlayersReady = false;
+    public bool IsReadyToStart = false;
+    public bool IsGameStart = false;
+    public bool IsGameEnd = false;
+    public bool IsReset = false;
+    public bool IsResetCoroutine = false;
 
     //reference of player1
     public GunGameButton player1;
@@ -64,6 +75,7 @@ public class GunGameManager : MonoBehaviour
     {   
         View = this.gameObject.GetComponent<PhotonView>();
         source = this.gameObject.GetComponent<AudioSource>();
+        _playerButtons = FindObjectsOfType<PlayerButton>().ToList();
         gunGrabOK = false;
         gunGameStart = false;
         
@@ -75,6 +87,27 @@ public class GunGameManager : MonoBehaviour
         if(PhotonNetwork.IsConnected)
         View.RPC("PhotonUpdate", RpcTarget.AllBuffered);
     }
+
+    public void WaitForPlayersReady()
+    {
+        if (PhotonNetwork.IsConnected)
+            View.RPC("PhotonWaitForPlayersReady", RpcTarget.AllBuffered);
+    }
+
+    [PunRPC]
+    private void PhotonWaitForPlayersReady()
+    {
+        Debug.Log("---Waiting For Players Ready---");
+        foreach (PlayerButton button in _playerButtons)
+        {
+            if (button.isPressed)
+            {
+                isPlayersReady = true;
+                _gameState = GameState.PlayersReady;
+            }
+        }
+    }
+
 
     [PunRPC]
     public void PhotonUpdate(){

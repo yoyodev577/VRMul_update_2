@@ -169,11 +169,11 @@ RectTransform:
   m_Children:
   - {fileID: 3714114843091881167}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: -15, y: -90, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 2.683, y: 3.872}
+  m_AnchoredPosition: {x: 2.683014, y: 3.871994}
   m_SizeDelta: {x: 4.5, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &4683263624923918990
@@ -221,7 +221,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &3679647708409680820
 MonoBehaviour:
   m_ObjectHideFlags: 0

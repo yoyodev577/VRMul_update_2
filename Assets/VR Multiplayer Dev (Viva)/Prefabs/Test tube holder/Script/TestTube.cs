@@ -5,15 +5,18 @@ using Photon.Pun;
 
 public class TestTube : MonoBehaviour
 {
+    private Vector3 startPos;
     [SerializeField]
     private GameObject cap, body;
-    private Transform coverPos;
     public bool grabbed  = false; //player grabbing the testtube or not
     // Start is called before the first frame update
     PhotonView View;
+    Rigidbody rb;
     void Start()
     {
         View = GetComponent<PhotonView>();
+        startPos= transform.position;
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -28,5 +31,24 @@ public class TestTube : MonoBehaviour
     [PunRPC]
     public void PhotonGrab(){
         grabbed = true;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Floor")
+        {
+            PhotonOnCollision();
+
+            // View.RPC("PhotonOnTriggerEnter", RpcTarget.AllBuffered);
+            Debug.Log(collision.gameObject.name + "Collides");
+
+        }
+    }
+
+    [PunRPC]
+    public void PhotonOnCollision()
+    {
+        transform.position = startPos;
+    
     }
 }
