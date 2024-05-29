@@ -902,6 +902,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkedVRPlayerPrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 4951164429965144051, guid: 61508f7edbab88e42aeb458f4a42c277, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5956325743148338487, guid: 61508f7edbab88e42aeb458f4a42c277, type: 3}
       propertyPath: sceneViewId
       value: 39

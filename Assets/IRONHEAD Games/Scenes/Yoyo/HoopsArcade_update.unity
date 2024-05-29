@@ -3610,7 +3610,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: de8293b96b3abae4aa41c3d9ce9b283c, type: 2}
     - target: {fileID: 7783298252161712742, guid: 813dd2964a9612848916c079eb560b5b, type: 3}
       propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7783298252161712742, guid: 813dd2964a9612848916c079eb560b5b, type: 3}
       propertyPath: onPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Mode

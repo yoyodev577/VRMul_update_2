@@ -5,6 +5,7 @@ using Photon.Pun;
 
 public class GunGameBoard : MonoBehaviour
 {
+    [SerializeField] private int playerNum = 0;
     private bool goRight = true;
     private Vector3 originalPosition;
     // Start is called before the first frame update
@@ -32,26 +33,14 @@ public class GunGameBoard : MonoBehaviour
 
         if (!PhotonNetwork.IsConnected) return;
 
-        // PhotonView wallObject = other.gameObject.GetComponent<PhotonView>();
-        // View.RPC("PhotonOnTriggerEnter",RpcTarget.AllBuffered,wallObject.ViewID);
         if(other.gameObject.GetComponent<RightWall>() != null){
-            // this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
-            // goRight = false;
+
             View.RPC("PhotonChangeDirection",RpcTarget.AllBuffered,false);
         }else if(other.gameObject.GetComponent<LeftWall>() != null){
-            // goRight = true;
             View.RPC("PhotonChangeDirection",RpcTarget.AllBuffered,true);
         }
 
         if(other.gameObject.GetComponent<GroundWall>() != null){
-            // this.gameObject.GetComponent<Rigidbody>().useGravity = false;
-            // for(int i = 0; i< this.gameObject.transform.childCount; i++){
-            //     this.gameObject.transform.GetChild(i).gameObject.SetActive(false);
-            // }
-            // this.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            // this.gameObject.transform.position = originalPosition;
-            // StartCoroutine(TimeForGenerateBoard());
-
             View.RPC("PhotonDropBoard",RpcTarget.AllBuffered);
         }
         
@@ -70,29 +59,6 @@ public class GunGameBoard : MonoBehaviour
         this.gameObject.transform.position = originalPosition;
         StartCoroutine(TimeForGenerateBoard());
     }
-
-    // [PunRPC]
-    // public void PhotonOnTriggerEnter(int wallObjectID){
-    //     PhotonView wallObject = PhotonView.Find(wallObjectID);
-
-    //     if(wallObject.gameObject.GetComponent<RightWall>() != null){
-    //         // this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
-    //         goRight = false;
-    //     }else if(wallObject.gameObject.GetComponent<LeftWall>() != null){
-    //         goRight = true;
-    //     }
-
-    //     if(wallObject.gameObject.GetComponent<GroundWall>() != null){
-    //         this.gameObject.GetComponent<Rigidbody>().useGravity = false;
-    //         for(int i = 0; i< this.gameObject.transform.childCount; i++){
-    //             this.gameObject.transform.GetChild(i).gameObject.SetActive(false);
-    //         }
-    //         this.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-    //         this.gameObject.transform.position = originalPosition;
-    //         StartCoroutine(TimeForGenerateBoard());
-
-    //     }
-    // }
 
     IEnumerator TimeForGenerateBoard(){
         yield return new WaitForSeconds(1);

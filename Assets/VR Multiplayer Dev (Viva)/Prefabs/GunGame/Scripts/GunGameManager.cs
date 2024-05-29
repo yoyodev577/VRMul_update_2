@@ -14,14 +14,31 @@ public class GunGameManager : MonoBehaviour
     [SerializeField] private AudioClip correctSound;
     [SerializeField] private AudioSource source;
 
+    [SerializeField] private List<Shoot> _playerShoots;
     [SerializeField] private List<PlayerButton> _playerButtons;
     [SerializeField] private GameState _gameState = GameState.Default;
+    [SerializeField] private int score_0, score_1 = 0;
+
     public bool isPlayersReady = false;
-    public bool IsReadyToStart = false;
-    public bool IsGameStart = false;
-    public bool IsGameEnd = false;
-    public bool IsReset = false;
-    public bool IsResetCoroutine = false;
+    public bool isReadyToStart = false;
+    public bool isGameStart = false;
+    public bool isGameEnd = false;
+    public bool isUpdateScore = false;
+    public bool isRoundStart = false;
+    public bool isRoundEnd = false;
+    public bool isReset = false;
+
+    public bool isGameCoroutine= false;
+    public bool isResetCoroutine = false;
+
+    public float currentSec = 0f;
+    public float timerSec = 3f;
+    public bool IsReadyTimerCoroutine = false;
+
+    [SerializeField] private List<Question> questions;
+    [SerializeField] private Question currentQuestion;
+    [SerializeField] private int currentIndex = 0;
+
 
     //reference of player1
     public GunGameButton player1;
@@ -38,6 +55,8 @@ public class GunGameManager : MonoBehaviour
     public GameObject notiPlayer2_2;
 
 
+
+
     // game control variable
     public TMP_Text CountDonwText;
     public GameObject CountDownCanva;
@@ -48,27 +67,12 @@ public class GunGameManager : MonoBehaviour
     public TMP_Text ResultText;
     public TMP_Text ShootingScore1;
     public TMP_Text ShootingScore2;
-    
+
+    public TMP_Text uiBoard;
+
 
     private int play1Score =0;
     private int play2Score =0;
-
-    private string[] Question = {
-        "Question 1: The ans is A :)",
-        "Question 2: The ans is B",
-        "Question 3: The ans is C",
-        "Question 4: The ans is D",
-    };
-
-    private string[] Answer = 
-    {
-        "A",
-        "B",
-        "C",
-        "D",
-
-    };
-
 
     // Start is called before the first frame update
     void Start()
@@ -76,22 +80,62 @@ public class GunGameManager : MonoBehaviour
         View = this.gameObject.GetComponent<PhotonView>();
         source = this.gameObject.GetComponent<AudioSource>();
         _playerButtons = FindObjectsOfType<PlayerButton>().ToList();
+        _playerShoots = FindObjectsOfType<Shoot>().ToList();
         gunGrabOK = false;
         gunGameStart = false;
+
+        InitQuestions();
         
     }
 
     // Update is called once per frame
     void Update()
-    {   
-        if(PhotonNetwork.IsConnected)
-        View.RPC("PhotonUpdate", RpcTarget.AllBuffered);
+    {
+        //if(PhotonNetwork.IsConnected)
+        //View.RPC("PhotonUpdate", RpcTarget.AllBuffered);
+
+        if (isPlayersReady && isReadyToStart)
+        {
+            StartTimer();
+        }
+
+        if (isGameStart)
+        {
+            StartGame();
+        }
+
+
+    }
+
+    void InitGame()
+    {
+        _gameState = GameState.Default;
+        UpdateBoardText("Press Ready to start the game.");
+    }
+
+    void InitQuestions()
+    {
+        questions.Add(new Question("Question 1: The ans is A :)"
+            , "A"
+            ));
+        questions.Add(new Question("Question 2: The ans is B :)"
+         , "B"
+         ));
+        questions.Add(new Question("Question 3: The ans is C :)"
+         , "C"
+         ));
+        questions.Add(new Question("Question 4: The ans is D :)"
+         , "D"
+         ));
+
     }
 
     public void WaitForPlayersReady()
     {
         if (PhotonNetwork.IsConnected)
             View.RPC("PhotonWaitForPlayersReady", RpcTarget.AllBuffered);
+
+       // PhotonWaitForPlayersReady();
     }
 
     [PunRPC]
@@ -107,6 +151,172 @@ public class GunGameManager : MonoBehaviour
             }
         }
     }
+
+    //Function for Start Button
+    public void ReadyToStart()
+    {
+        if (PhotonNetwork.IsConnected)
+            View.RPC("PhotonReadyToStart", RpcTarget.AllBuffered);
+
+        //PhotonReadyToStart();
+    }
+
+
+
+    [PunRPC]
+    private void PhotonReadyToStart()
+    {
+        Debug.Log("---Game Ready To Start---");
+        if (isPlayersReady && !isReadyToStart)
+        {
+            isReadyToStart = true;
+            _gameState = GameState.ReadyToStart;
+        }
+    }
+    
+
+    public void StartGame()
+    {
+        if (PhotonNetwork.IsConnected)
+            View.RPC("PhotonStartGame", RpcTarget.AllBuffered);
+
+    }
+
+    [PunRPC]
+    private void PhotonStartGame()
+    {
+        Debug.Log("---Start the game---");
+
+        _gameState = GameState.StartGame;
+        isGameStart = true;
+        gunGrabOK = true;
+
+        foreach(Shoot shoot in _playerShoots)
+        {
+            shoot.ShowRedPoint();
+        }
+
+        if (!isGameCoroutine)
+            StartCoroutine(SetGameCoroutine());
+
+    }
+
+
+
+    public void EndGame()
+    {
+        if (PhotonNetwork.IsConnected)
+            View.RPC("PhotonEndGame", RpcTarget.AllBuffered);
+    }
+
+    [PunRPC]
+    private void PhotonEndGame()
+    {
+
+        _gameState = GameState.EndGame;
+        isGameEnd = true;
+        //ShowResult();
+    }
+
+
+    public void StartTimer()
+    {
+        if (PhotonNetwork.IsConnected)
+            View.RPC("PhotonStartTimer", RpcTarget.AllBuffered);
+
+    }
+
+    [PunRPC]
+    private void PhotonStartTimer()
+    {
+        if (!IsReadyTimerCoroutine)
+            StartCoroutine(SetReadyTimerCoroutine(timerSec));
+    }
+
+    private void UpdateBoardText(string text)
+    {
+        uiBoard.text = text;
+
+    }
+
+    public bool IsRoundEnd() { 
+        if(_playerShoots.Count == 0 || !isRoundStart || isRoundEnd) return false;
+
+        foreach(Shoot shoot in _playerShoots)
+        {
+            if (shoot.currentAns == questions[currentIndex].answerText)
+            {
+                AddScore(shoot.playerNum);
+                isUpdateScore = false;
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public void AddScore(int playerNum) {
+        if (isUpdateScore) return;
+
+        if (playerNum == 0)
+            score_0++;
+        else if(playerNum ==1)
+            score_1++;
+
+        isUpdateScore = true;
+    }
+
+
+
+    IEnumerator SetGameCoroutine()
+    {
+        Debug.Log("---Start Game Coroutine");
+        isGameCoroutine = true;
+        if (currentIndex < questions.Count)
+        {
+            currentQuestion = questions[currentIndex];
+            UpdateBoardText(currentQuestion.ToString());
+            while (isRoundEnd)
+            {
+                currentIndex++;
+                yield return new WaitForEndOfFrame();
+                isRoundEnd = false;
+            }
+        }
+        else {
+
+            isGameEnd = true;
+        }
+        isGameCoroutine = false;
+    }
+
+
+    IEnumerator SetReadyTimerCoroutine(float seconds)
+    {
+        IsReadyTimerCoroutine = true;
+        currentSec = seconds;
+
+        while (currentSec >= 0)
+        {
+            UpdateBoardText(currentSec.ToString());
+            yield return new WaitForSeconds(1f);
+            currentSec -= 1;
+        }
+
+        if (currentSec <= 0)
+        {
+            yield return null;
+            IsReadyTimerCoroutine = false;
+            isReadyToStart = false;
+            isGameStart = true;
+        }
+
+    }
+
+
+
 
 
     [PunRPC]
@@ -167,14 +377,6 @@ public class GunGameManager : MonoBehaviour
         }
         // View.RPC("PhotonCountDownForStartGunGame", RpcTarget.AllBuffered);
     }
-    // [PunRPC]
-    // public void PhotonCountDownForStartGunGame(){
-    //     // if(!gunGameStart){
-    //     //     gunGameStart = true;
-    //     //     CountDownCanva.SetActive(true);
-    //     //     StartCoroutine(coroutineForCountDown());
-    //     // }
-    // }
 
     IEnumerator coroutineForCountDown(){
         for (int i = 3; i>=0; i--){
@@ -254,8 +456,8 @@ public class GunGameManager : MonoBehaviour
         notiPlayer2_2.SetActive(false);
         notiPlayer2.SetActive(false);
         notiPlayer1_2.SetActive(false);
-        QuestionBoardText.text = Question[index];
-        answer = Answer[index];
+        //QuestionBoardText.text = Question[index];
+        //answer = Answer[index];
         roundEnd = false;
         updateWinner = true;
         while(!roundEnd){

@@ -80,10 +80,13 @@ public class MultiSpin : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Hand") {
+            if(PhotonNetwork.IsConnected) 
             View.RPC("PhotonSetLid", RpcTarget.AllBuffered);
+
             Debug.Log(other.gameObject.name + "Collides");
             isLidOpened = !isLidOpened;
-           // PhotonOnTriggerEnter();
+            //PhotonOnTriggerEnter();
+            //PhotonSetLid();
         }
     }
     [PunRPC]

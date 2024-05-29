@@ -6,7 +6,9 @@ using TMPro;
 
 public class Shoot : MonoBehaviour
 {
-    
+    [SerializeField] public int playerNum;
+    private Vector3 startPos;
+
     public float fireRate = 0.25f; // rate of the fire shooting 
     public float fireDistance = 50f; // distance that the fire can reach
     public float hitForce = 100f; //???
@@ -24,6 +26,7 @@ public class Shoot : MonoBehaviour
     public GameObject effect;
 
     public GameObject[] GunGameBoard; //0 = A, 1 = B, 2 = C, 3 = D
+    public string currentAns = "";
     // public AudioClip shootSound;
     public bool check = false;
 
@@ -48,6 +51,7 @@ public class Shoot : MonoBehaviour
         src.mute = true;
         effect = GameObject.Find(nameOfParticalEffect);
         View = GetComponent<PhotonView>();
+        startPos = transform.position;
 
     }
 
@@ -56,6 +60,7 @@ public class Shoot : MonoBehaviour
     {
        
         if(redPoint.activeSelf == true){
+            //start shooting
             if(Physics.Raycast(gunFront.transform.position,gunFront.transform.forward, out hit, fireDistance)){
             redPoint.transform.position = hit.point;
 
@@ -69,41 +74,19 @@ public class Shoot : MonoBehaviour
         
     }
 
-    public void showRedPoint(){
+    public void ShowRedPoint(){
         redPoint.SetActive(true);
     }
 
-    public void hideRedPoint(){
+    public void HideRedPoint(){
         redPoint.SetActive(false);
     }
 
     
 
-    public void shootBullet(){
-        // if(Time.time > nextFire){ //over the time that cannot shoot
-        //     nextFire = Time.time + fireRate; // next time that can shoot 
-        //     StartCoroutine(ShotEffect());
-        // }    
+    public void ShootBullet(){
 
-
-        // laserLine.SetPosition(0,gunFront.position); // set the laserline postion to the front of the gun
-        
-        // if(Physics.Raycast(gunFront.transform.position,gunFront.transform.forward,out hit, fireDistance)){
-        //     laserLine.SetPosition(1, hit.point);
-
-        //     for (int i =0; i<=3; i++){
-        //         if(hit.collider.gameObject == GunGameBoard[i]){
-        //             hit.collider.gameObject.GetComponent<Rigidbody>().useGravity = true;
-        //             currentBoardNumber =i;
-        //             StartCoroutine(BoardEffect());
-        //             break;
-        //         }
-                
-        //     }
-
-        // }else{
-        //     laserLine.SetPosition(1, gunFront.transform.position + (gunFront.transform.forward * fireDistance));
-        // }
+        if (PhotonNetwork.IsConnected)
         View.RPC("PhotonShootBullet", RpcTarget.AllBuffered);
 
     }
@@ -112,18 +95,18 @@ public class Shoot : MonoBehaviour
          if(Time.time > nextFire){ //over the time that cannot shoot
             nextFire = Time.time + fireRate; // next time that can shoot 
             StartCoroutine(ShotEffect());
-        }    
-
-
-        laserLine.SetPosition(0,gunFront.position); // set the laserline postion to the front of the gun
+        }
+        // set the laserline postion to the front of the gun
+        laserLine.SetPosition(0,gunFront.position); 
         
         if(Physics.Raycast(gunFront.transform.position,gunFront.transform.forward,out hit, fireDistance)){
             laserLine.SetPosition(1, hit.point);
 
-            for (int i =0; i<=3; i++){
+            for (int i =0; i< GunGameBoard.Length; i++){
                 if(hit.collider.gameObject == GunGameBoard[i]){
                     hit.collider.gameObject.GetComponent<Rigidbody>().useGravity = true;
                     currentBoardNumber =i;
+                    currentAns = GunGameBoard[i].tag;
                     StartCoroutine(BoardEffect());
                     break;
                 }
@@ -134,20 +117,9 @@ public class Shoot : MonoBehaviour
             laserLine.SetPosition(1, gunFront.transform.position + (gunFront.transform.forward * fireDistance));
         }
     }
-
+/*
     public void ShowBoardName1(){
 
-        // if (currentBoardNumber == 0){
-        //     gameManager.GetComponent<GunGameManager>().checkAnswer1("A");
-        // }else if (currentBoardNumber == 1){
-        //     gameManager.GetComponent<GunGameManager>().checkAnswer1("B");
-        // }else if (currentBoardNumber == 2){
-        //     gameManager.GetComponent<GunGameManager>().checkAnswer1("C");
-        // }else if (currentBoardNumber == 3){
-        //     gameManager.GetComponent<GunGameManager>().checkAnswer1("D");
-        // }else{
-        //     gameManager.GetComponent<GunGameManager>().checkAnswer1(null);
-        // }
         View.RPC("PhotonShowBoardName1", RpcTarget.AllBuffered);
     }
 
@@ -167,18 +139,6 @@ public class Shoot : MonoBehaviour
     }
 
     public void ShowBoardName2(){
-
-        // if (currentBoardNumber == 0){
-        //     gameManager.GetComponent<GunGameManager>().checkAnswer2("A");
-        // }else if (currentBoardNumber == 1){
-        //     gameManager.GetComponent<GunGameManager>().checkAnswer2("B");
-        // }else if (currentBoardNumber == 2){
-        //     gameManager.GetComponent<GunGameManager>().checkAnswer2("C");
-        // }else if (currentBoardNumber == 3){
-        //     gameManager.GetComponent<GunGameManager>().checkAnswer2("D");
-        // }else{
-        //     gameManager.GetComponent<GunGameManager>().checkAnswer2(null);
-        // }
          View.RPC("PhotonShowBoardName2", RpcTarget.AllBuffered);
     }
 
@@ -198,7 +158,7 @@ public class Shoot : MonoBehaviour
     }
 
 
-
+*/
     IEnumerator ShotEffect(){
         // play the sound
         
@@ -221,5 +181,20 @@ public class Shoot : MonoBehaviour
 
     }
 
-    
+    public void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Floor")
+        {
+            if (PhotonNetwork.IsConnected)
+                View.RPC("ResetPosition", RpcTarget.All);
+
+        }
+    }
+
+    [PunRPC]
+    public void ResetPosition()
+    {
+        transform.position = startPos;
+    }
+
 }
