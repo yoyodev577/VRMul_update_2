@@ -7482,6 +7482,10 @@ PrefabInstance:
       propertyPath: m_HorizontalAlignment
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4018525455004636092, guid: cbf7950b6de28d941990511fa5da7529, type: 3}
+      propertyPath: m_BlockingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 4119570900827321770, guid: cbf7950b6de28d941990511fa5da7529, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 1
