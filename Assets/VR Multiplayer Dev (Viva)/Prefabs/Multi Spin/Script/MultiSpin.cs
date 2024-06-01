@@ -30,7 +30,7 @@ public class MultiSpin : MonoBehaviour
     private int defaultTubeAmount = 3;
     private int spinnerPosCount;
     [SerializeField] private bool[] testTubePlaceholder;
-    private List<bool[]> correctArrangement;
+    [SerializeField] private List<bool[]> correctArrangement;
     public bool isBalanced = false;
 
     //Explosion variables
@@ -39,13 +39,14 @@ public class MultiSpin : MonoBehaviour
     [SerializeField]
     private TMP_Text debug, correctSequence;
     private string whichHasTestTube, currentSequence;
-    PhotonView View;
+    [SerializeField] PhotonView View;
     #endregion
 
     #region Unity Methods
     // Start is called before the first frame update
     void Start()
     {   
+        View = GetComponent<PhotonView>(); 
         InitGame();
     }
 
@@ -66,13 +67,12 @@ public class MultiSpin : MonoBehaviour
 
     [PunRPC]
     public void PhotonUpdate(){
-        spinner.transform.Rotate(Vector3.forward * spinSpeed);
         lid.GetComponent<Rigidbody>().isKinematic = isMultispinCoroutine;
-        CheckSpinning();
+       // CheckSpinning();
         CheckTestTubePos();
         TubeCorrectSequence(CheckTestTubeAmount());
         CheckSpinnerBalance();
-        SetDebugText();
+        //SetDebugText();
         SetCorrectPlacingText();
     }
 
@@ -80,13 +80,14 @@ public class MultiSpin : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Hand") {
+
             if(PhotonNetwork.IsConnected) 
             View.RPC("PhotonSetLid", RpcTarget.AllBuffered);
 
             Debug.Log(other.gameObject.name + "Collides");
             isLidOpened = !isLidOpened;
             //PhotonOnTriggerEnter();
-            //PhotonSetLid();
+           // PhotonSetLid();
         }
     }
     [PunRPC]
@@ -106,7 +107,7 @@ public class MultiSpin : MonoBehaviour
         {
             lid.transform.localEulerAngles = new Vector3(-165, 0, -90); //close
 
-            //isSpinnerTriggered = true;
+            isSpinnerTriggered = true;
 
             if (!isSpinCoroutine)
             {
@@ -154,6 +155,7 @@ public class MultiSpin : MonoBehaviour
                 while (spinSpeed < 15)
                 {
                     spinSpeed += .15f;
+                    isSpinning = true;
                     yield return null;
                 }
             }
@@ -162,10 +164,17 @@ public class MultiSpin : MonoBehaviour
                 while (spinSpeed > 0)
                 {
                     spinSpeed -= .15f;
+                    isSpinning = true;
                     yield return null;
                 }
             }
         }
+        else {
+            spinSpeed = 0;
+            isSpinning = false;
+        }
+
+        spinner.transform.Rotate(Vector3.forward * spinSpeed);
         isSpinnerTriggered = false;
         isSpinCoroutine = false;
         yield break;
@@ -345,7 +354,7 @@ public class MultiSpin : MonoBehaviour
             }
             currentSequence += sequence;
         }
-       // correctSequence.text = currentSequence;
+        Debug.Log(currentSequence);
     }
 
     void SetDebugText()

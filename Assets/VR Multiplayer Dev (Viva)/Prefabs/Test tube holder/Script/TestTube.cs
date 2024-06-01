@@ -19,12 +19,6 @@ public class TestTube : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void grab(){
         View.RPC("PhotonGrab", RpcTarget.AllBuffered);
     }
@@ -37,11 +31,10 @@ public class TestTube : MonoBehaviour
     {
         if (collision.gameObject.tag == "Floor")
         {
-            PhotonOnCollision();
+            //PhotonOnCollision();
 
-            // View.RPC("PhotonOnTriggerEnter", RpcTarget.AllBuffered);
-            Debug.Log(collision.gameObject.name + "Collides");
-
+            if(PhotonNetwork.IsConnected) 
+            View.RPC("PhotonOnCollision", RpcTarget.AllBuffered);
         }
     }
 

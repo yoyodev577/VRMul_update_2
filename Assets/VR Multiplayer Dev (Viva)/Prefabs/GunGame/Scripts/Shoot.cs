@@ -62,7 +62,8 @@ public class Shoot : MonoBehaviour
         if(redPoint.activeSelf == true){
             //start shooting
             if(Physics.Raycast(gunFront.transform.position,gunFront.transform.forward, out hit, fireDistance)){
-            redPoint.transform.position = hit.point;
+                redPoint.transform.position = hit.point;
+                ShootBullet();
 
             }else{
                 redPoint.transform.position  = gunFront.transform.position + (gunFront.transform.forward * fireDistance);

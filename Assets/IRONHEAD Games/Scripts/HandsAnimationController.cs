@@ -19,10 +19,10 @@ public class HandsAnimationController : MonoBehaviour
     int GrabSmall = Animator.StringToHash("GrabSmall");
     int GrabLarge = Animator.StringToHash("GrabLarge");
     
-    float currentPressed =0 ;
-    float currentPressedR =0 ;
-    float currentPressed_trigger=0 ;
-    float currentPressed_triggerR=0 ;
+    public float currentPressed =0 ;
+    public float currentPressedR =0 ;
+    public float currentPressed_trigger=0 ;
+    public float currentPressed_triggerR=0 ;
     void Start()
     {
         View = GetComponent<PhotonView>();
@@ -54,18 +54,15 @@ public class HandsAnimationController : MonoBehaviour
         // DebugUIManager.instance.ShowDebugUIMessage(obj.ReadValue<float>().ToString());
         if(WhichHand == "Left"){
             animL.SetTrigger("Fist");
-            // LeftHandAnimator.SetFloat("grip",obj.ReadValue<float>());
-            // if(obj.ReadValue<float>()>0.5){
-            //     animL.SetTrigger(GrabSmall);
-            // }else{
-            //     animL.SetTrigger(GrabLarge);
-            // }
+
             if(obj.ReadValue<float>() - currentPressed_trigger >0){
-                // animL.SetFloat("trigger",0.6f);
-                View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered,"trigger",0.6f);
+
+               // if (PhotonNetwork.IsConnected)
+                    View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered,"trigger",0.6f);
             }else{
-                // animL.SetFloat("trigger",0.4f);
-                View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered,"trigger",0.4f);
+
+               // if (PhotonNetwork.IsConnected)
+                    View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered,"trigger",0.4f);
             }
             currentPressed_trigger=obj.ReadValue<float>();
             // animL.SetFloat("grab",obj.ReadValue<float>());
@@ -73,11 +70,19 @@ public class HandsAnimationController : MonoBehaviour
         }else{
             // RightHandAnimator.SetFloat("grip",obj.ReadValue<float>());
             if(obj.ReadValue<float>() - currentPressed_triggerR >0){
-                // animR.SetFloat("trigger",0.6f);
-                View.RPC("PhotonSetFloatR", RpcTarget.AllBuffered,"trigger",0.6f);
+
+                //if (PhotonNetwork.IsConnected)
+                    View.RPC("PhotonSetFloatR", RpcTarget.AllBuffered,"trigger",0.6f);
+
+
+                PhotonSetFloatR("trigger", 0.6f);
             }else{
-                // animR.SetFloat("trigger",0.4f);
-                View.RPC("PhotonSetFloatR", RpcTarget.AllBuffered,"trigger",0.4f);
+
+               // if (PhotonNetwork.IsConnected)
+                    View.RPC("PhotonSetFloatR", RpcTarget.AllBuffered,"trigger",0.4f);
+
+
+                PhotonSetFloatR("trigger", 0.4f);
             }
             currentPressed_triggerR=obj.ReadValue<float>();
         }
@@ -94,44 +99,38 @@ public class HandsAnimationController : MonoBehaviour
 
     private void GripPressed(InputAction.CallbackContext obj)
     {
+       
+
         // DebugUIManager.instance.ShowDebugUIMessage(obj.ReadValue<float>().ToString());
         if(WhichHand == "Left"){
+
             animL.SetTrigger("Fist");
-            // LeftHandAnimator.SetFloat("grip",obj.ReadValue<float>());
-            // if(obj.ReadValue<float>()>0.5){
-            //     animL.SetTrigger(GrabSmall);
-            // }else{
-            //     animL.SetTrigger(GrabLarge);
-            // }
+
             if(obj.ReadValue<float>() - currentPressed >0){
-                // animL.SetFloat("grab",0.6f);
+
+                //if(PhotonNetwork.IsConnected)
                 View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered,"grab",0.6f);
             }else{
-                // animL.SetFloat("grab",0.4f);
-                View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered,"grab",0.4f);
+
+               // if (PhotonNetwork.IsConnected)
+                 View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered,"grab",0.4f);
             }
             currentPressed=obj.ReadValue<float>();
-            // animL.SetFloat("grab",obj.ReadValue<float>());
             
         }else{
             // RightHandAnimator.SetFloat("grip",obj.ReadValue<float>());
             if(obj.ReadValue<float>() - currentPressedR >0){
-                // animR.SetFloat("grab",0.6f);
-                View.RPC("PhotonSetFloatR", RpcTarget.AllBuffered,"grab",0.6f);
+
+
+                //if (PhotonNetwork.IsConnected)
+                    View.RPC("PhotonSetFloatR", RpcTarget.AllBuffered,"grab",0.6f);
             }else{
-                // animR.SetFloat("grab",0.4f);
-                View.RPC("PhotonSetFloatR", RpcTarget.AllBuffered,"grab",0.4f);
+
+                //if (PhotonNetwork.IsConnected)
+                    View.RPC("PhotonSetFloatR", RpcTarget.AllBuffered,"grab",0.4f);
             }
             currentPressedR=obj.ReadValue<float>();
         }
-        // HandAnimator.SetFloat("Grip_"+WhichHand, obj.ReadValue<float>());
-        //Debug.Log("Grip Pressed " + obj.ReadValue<float>());
-
-        // if(WhichHand == "Left"){
-        //     LeftHandAnimator.SetFloat("grip",obj.ReadValue<float>());
-        // }else{
-        //     RightHandAnimator.SetFloat("grip",obj.ReadValue<float>());
-        // }
     }
     
 }

@@ -1835,6 +1835,10 @@ MonoBehaviour:
   WhichHand: Left
   animL: {fileID: 0}
   animR: {fileID: 0}
+  currentPressed: 0
+  currentPressedR: 0
+  currentPressed_trigger: 0
+  currentPressed_triggerR: 0
 --- !u!1 &3567714039327286842
 GameObject:
   m_ObjectHideFlags: 0
@@ -4442,6 +4446,10 @@ MonoBehaviour:
   WhichHand: Right
   animL: {fileID: 447244033806183811}
   animR: {fileID: 6765807425518026387}
+  currentPressed: 0
+  currentPressedR: 0
+  currentPressed_trigger: 0
+  currentPressed_triggerR: 0
 --- !u!114 &5956325743148338487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5342,6 +5350,10 @@ MonoBehaviour:
   WhichHand: Left
   animL: {fileID: 447244033806183811}
   animR: {fileID: 6765807425518026387}
+  currentPressed: 0
+  currentPressedR: 0
+  currentPressed_trigger: 0
+  currentPressed_triggerR: 0
 --- !u!114 &4208350913173531119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5964,6 +5976,10 @@ MonoBehaviour:
   WhichHand: Right
   animL: {fileID: 0}
   animR: {fileID: 0}
+  currentPressed: 0
+  currentPressedR: 0
+  currentPressed_trigger: 0
+  currentPressed_triggerR: 0
 --- !u!114 &9105631071349738375
 MonoBehaviour:
   m_ObjectHideFlags: 0

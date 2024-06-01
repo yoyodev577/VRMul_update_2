@@ -8,6 +8,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5221184314434499304, guid: 8737f0fdc23234d4e8d27a7abea6a00e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5538308986525050051, guid: 8737f0fdc23234d4e8d27a7abea6a00e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.176
+      objectReference: {fileID: 0}
+    - target: {fileID: 5538308986525050051, guid: 8737f0fdc23234d4e8d27a7abea6a00e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.176
+      objectReference: {fileID: 0}
     - target: {fileID: 5807322785996482855, guid: 8737f0fdc23234d4e8d27a7abea6a00e, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -52,9 +64,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5859534410619867707, guid: 8737f0fdc23234d4e8d27a7abea6a00e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6619185217672999837, guid: 8737f0fdc23234d4e8d27a7abea6a00e, type: 3}
       propertyPath: m_Name
-      value: Panel Variant
+      value: Start Panel
+      objectReference: {fileID: 0}
+    - target: {fileID: 6847666293612787307, guid: 8737f0fdc23234d4e8d27a7abea6a00e, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
