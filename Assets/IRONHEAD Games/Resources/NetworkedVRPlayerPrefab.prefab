@@ -8212,6 +8212,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Local Player UI Menu
       objectReference: {fileID: 0}
+    - target: {fileID: 930434389981890381, guid: 2be68266f3cccae4d9ee2ceead37f491, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 930434389981890416, guid: 2be68266f3cccae4d9ee2ceead37f491, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -8306,19 +8310,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4081238475469125322, guid: 2be68266f3cccae4d9ee2ceead37f491, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4081238475469125322, guid: 2be68266f3cccae4d9ee2ceead37f491, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4081238475469125322, guid: 2be68266f3cccae4d9ee2ceead37f491, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 55
       objectReference: {fileID: 0}
     - target: {fileID: 4081238475469125322, guid: 2be68266f3cccae4d9ee2ceead37f491, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -40
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

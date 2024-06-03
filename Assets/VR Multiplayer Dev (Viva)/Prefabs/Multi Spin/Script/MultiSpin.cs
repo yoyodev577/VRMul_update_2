@@ -6,6 +6,8 @@ using UnityEditor;
 using System;
 using TMPro;
 using Photon.Pun;
+using System.Linq;
+using UnityEngine.UI;
 
 public class MultiSpin : MonoBehaviour
 {
@@ -23,7 +25,11 @@ public class MultiSpin : MonoBehaviour
     [SerializeField] private bool isLidOpened = false;
     [SerializeField] private bool isMultispinCoroutine = false;
     [SerializeField] private bool isSpinnerTriggered = false;
+    [SerializeField] private bool hasResult = false;
     [SerializeField] private bool isSpinCoroutine = false;
+    [SerializeField] private bool isResultCoroutine = false;
+
+    [SerializeField] private List<MultiSpinTestTubeLock> testTubeLocks = new List<MultiSpinTestTubeLock>();
 
     //Test tube position checking variables
     [SerializeField]
@@ -40,13 +46,16 @@ public class MultiSpin : MonoBehaviour
     private TMP_Text debug, correctSequence;
     private string whichHasTestTube, currentSequence;
     [SerializeField] PhotonView View;
+
+    [SerializeField] private Image correctImage;
     #endregion
 
     #region Unity Methods
     // Start is called before the first frame update
     void Start()
     {   
-        View = GetComponent<PhotonView>(); 
+        View = GetComponent<PhotonView>();
+        testTubeLocks = FindObjectsOfType<MultiSpinTestTubeLock>().ToList();
         InitGame();
     }
 
@@ -58,11 +67,11 @@ public class MultiSpin : MonoBehaviour
     }
 
     void InitGame() {
-        View = GetComponent<PhotonView>();
         spinnerPosCount = spinner.transform.childCount;
         testTubePlaceholder = new bool[spinnerPosCount];
         TubeCorrectSequence(defaultTubeAmount);
         SetCorrectPlacingText();
+        correctImage.enabled = false;
     }
 
     [PunRPC]
@@ -73,7 +82,7 @@ public class MultiSpin : MonoBehaviour
         TubeCorrectSequence(CheckTestTubeAmount());
         CheckSpinnerBalance();
         //SetDebugText();
-        SetCorrectPlacingText();
+        //SetCorrectPlacingText();
     }
 
 
@@ -91,15 +100,6 @@ public class MultiSpin : MonoBehaviour
         }
     }
     [PunRPC]
-    public void PhotonOnTriggerEnter()
-    {
-        if (!isMultispinCoroutine)
-        {
-          //StartCoroutine(MultiSpinSequence());
-        }
-    }
-
-    [PunRPC]
     public void PhotonSetLid() {
 
         Debug.Log("--Lid Opens--" + isLidOpened);
@@ -107,12 +107,18 @@ public class MultiSpin : MonoBehaviour
         {
             lid.transform.localEulerAngles = new Vector3(-165, 0, -90); //close
 
-            isSpinnerTriggered = true;
-
-            if (!isSpinCoroutine)
+            foreach(MultiSpinTestTubeLock testTubeLock in testTubeLocks )
             {
-                StartCoroutine(ActivateSpinner());
+                if (testTubeLock.isOccupied)
+                {
+                    if (!isSpinCoroutine)
+                    {
+                        StartCoroutine(ActivateSpinner());
+                    }
+                }
+
             }
+
 
         }
         else                    
@@ -125,30 +131,30 @@ public class MultiSpin : MonoBehaviour
     }
 
     #endregion
-
+/*
     #region Coroutine Sequence
     IEnumerator MultiSpinSequence()
     {
         isMultispinCoroutine = true;
         //yield return StartCoroutine(ActivateSpinner());
        // yield return StartCoroutine(LidTrigger());
-        yield return StartCoroutine(ToggleTestTubeHold());
+        //yield return StartCoroutine(SetSpinnerTubeActivate());
         //yield return StartCoroutine(ActivateSpinner());
         yield return new WaitForSeconds(3f);
-        if (!isBalanced) { yield return StartCoroutine(Explode()); } //explode;
+        if (!isBalanced) {  } //explode;
         isMultispinCoroutine = false;
         yield break;
 
     }
     #endregion
-
+*/
 
     #region Coroutine Methods
     IEnumerator ActivateSpinner()
     {
         isSpinCoroutine = true;
         Debug.Log("---Adjust Spin Speed");
-        if (!isLidOpened && isSpinnerTriggered)     //Spinner should only accelerate/decelerate when the lid is closed; and when awoke (default not spinning)
+        if (!isLidOpened)     //Spinner should only accelerate/decelerate when the lid is closed; and when awoke (default not spinning)
         {
             if (!isSpinning)          //Not spinning: Accelerate
             {
@@ -156,6 +162,7 @@ public class MultiSpin : MonoBehaviour
                 {
                     spinSpeed += .15f;
                     isSpinning = true;
+                    SetSpinnerTubeActivate(false);
                     yield return null;
                 }
             }
@@ -165,6 +172,7 @@ public class MultiSpin : MonoBehaviour
                 {
                     spinSpeed -= .15f;
                     isSpinning = true;
+                    SetSpinnerTubeActivate(false);
                     yield return null;
                 }
             }
@@ -172,6 +180,7 @@ public class MultiSpin : MonoBehaviour
         else {
             spinSpeed = 0;
             isSpinning = false;
+            SetSpinnerTubeActivate(true);
         }
 
         spinner.transform.Rotate(Vector3.forward * spinSpeed);
@@ -179,7 +188,7 @@ public class MultiSpin : MonoBehaviour
         isSpinCoroutine = false;
         yield break;
     }
-
+/*
     IEnumerator LidTrigger()
     {
 
@@ -193,18 +202,25 @@ public class MultiSpin : MonoBehaviour
             lid.transform.localEulerAngles = new Vector3(-270, 0, -90); //open
         }
         yield break;
-    }
+    }*/
 
-    IEnumerator ToggleTestTubeHold()
+    IEnumerator ResultCoroutine()
     {
-        lid.GetComponent<MeshCollider>().enabled = !isLidOpened;
-        lid.GetComponent<MeshCollider>().convex = !isLidOpened;
-        CapsuleCollider[] testTubeHolder = spinner.GetComponentsInChildren<CapsuleCollider>(true);
-        for (int i = 0; i < testTubeHolder.Length; i++)
+        if (hasResult) yield break; 
+
+        isResultCoroutine = true;
+
+        if (!isBalanced)
         {
-            testTubeHolder[i].enabled = isLidOpened;
+            yield return StartCoroutine(Explode());
         }
+        else {
+            correctImage.enabled = true;
+        }
+        hasResult = true;
+        isResultCoroutine = false;
         yield break;
+
     }
 
     IEnumerator Explode()
@@ -216,7 +232,8 @@ public class MultiSpin : MonoBehaviour
             yield return new WaitForSeconds(1);
             explosion.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             explosion.enableEmission = false;
-            yield return StartCoroutine(MultiSpinSequence());
+            yield return ResultCoroutine();
+            //yield return StartCoroutine(MultiSpinSequence());
         }
     }
     #endregion
@@ -355,6 +372,15 @@ public class MultiSpin : MonoBehaviour
             currentSequence += sequence;
         }
         Debug.Log(currentSequence);
+    }
+
+    void SetSpinnerTubeActivate(bool canHold)
+    {
+        CapsuleCollider[] spinnerTubeHolder = spinner.GetComponentsInChildren<CapsuleCollider>(true);
+        for (int i = 0; i < spinnerTubeHolder.Length; i++)
+        {
+            spinnerTubeHolder[i].enabled = canHold;
+        }
     }
 
     void SetDebugText()
