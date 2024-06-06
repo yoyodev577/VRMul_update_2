@@ -19,7 +19,7 @@ public class MultiSpin : MonoBehaviour
     private GameObject spinner;
     private float spinSpeed = 0;
     private bool isSpinning;
-    [SerializeField]private GameObject pivot;
+    [SerializeField] private GameObject pivot;
     [SerializeField] private GameObject lid;
 
     [SerializeField] private bool isLidOpened = false;
@@ -29,6 +29,9 @@ public class MultiSpin : MonoBehaviour
     [SerializeField] private bool isSpinCoroutine = false;
     [SerializeField] private bool isResultCoroutine = false;
 
+    [SerializeField] private Transform testTubeParent;
+
+    [SerializeField] private List<TestTube> testTubeList = new List<TestTube>();
     [SerializeField] private List<MultiSpinTestTubeLock> testTubeLocks = new List<MultiSpinTestTubeLock>();
 
     //Test tube position checking variables
@@ -48,22 +51,28 @@ public class MultiSpin : MonoBehaviour
     [SerializeField] PhotonView View;
 
     [SerializeField] private Image correctImage;
+
+    [SerializeField] private AudioClip correctClip, explodeClip;
+    [SerializeField] private AudioSource audioSource;
     #endregion
 
     #region Unity Methods
     // Start is called before the first frame update
     void Start()
-    {   
+    {
         View = GetComponent<PhotonView>();
-        testTubeLocks = FindObjectsOfType<MultiSpinTestTubeLock>().ToList();
+        audioSource = GetComponent<AudioSource>();
+        testTubeList.AddRange(testTubeParent.transform.GetComponentsInChildren<TestTube>());
+        testTubeLocks.AddRange(spinner.transform.GetComponentsInChildren<MultiSpinTestTubeLock>());
+        
         InitGame();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if (PhotonNetwork.IsConnected)
-        //View.RPC("PhotonUpdate", RpcTarget.AllBuffered);
+        if (PhotonNetwork.IsConnected)
+            View.RPC("PhotonUpdate", RpcTarget.AllBuffered);
     }
 
     void InitGame() {
@@ -72,12 +81,13 @@ public class MultiSpin : MonoBehaviour
         TubeCorrectSequence(defaultTubeAmount);
         SetCorrectPlacingText();
         correctImage.enabled = false;
+        isLidOpened = false;
     }
 
     [PunRPC]
-    public void PhotonUpdate(){
-        lid.GetComponent<Rigidbody>().isKinematic = isMultispinCoroutine;
-       // CheckSpinning();
+    public void PhotonUpdate() {
+        //lid.GetComponent<Rigidbody>().isKinematic = isMultispinCoroutine;
+        // CheckSpinning();
         CheckTestTubePos();
         TubeCorrectSequence(CheckTestTubeAmount());
         CheckSpinnerBalance();
@@ -90,24 +100,24 @@ public class MultiSpin : MonoBehaviour
     {
         if (other.gameObject.tag == "Hand") {
 
-            if(PhotonNetwork.IsConnected) 
-            View.RPC("PhotonSetLid", RpcTarget.AllBuffered);
+            if (PhotonNetwork.IsConnected)
+                View.RPC("PhotonSetLid", RpcTarget.AllBuffered);
 
             Debug.Log(other.gameObject.name + "Collides");
             isLidOpened = !isLidOpened;
             //PhotonOnTriggerEnter();
-           // PhotonSetLid();
+            // PhotonSetLid();
         }
     }
     [PunRPC]
     public void PhotonSetLid() {
 
         Debug.Log("--Lid Opens--" + isLidOpened);
-        if (!isLidOpened)         
+        if (!isLidOpened)
         {
             lid.transform.localEulerAngles = new Vector3(-165, 0, -90); //close
 
-            foreach(MultiSpinTestTubeLock testTubeLock in testTubeLocks )
+            foreach (MultiSpinTestTubeLock testTubeLock in testTubeLocks)
             {
                 if (testTubeLock.isOccupied)
                 {
@@ -118,36 +128,34 @@ public class MultiSpin : MonoBehaviour
                 }
 
             }
-
-
         }
-        else                    
+        else
         {
             lid.transform.localEulerAngles = new Vector3(-270, 0, -90); //open
 
         }
 
-       
+
     }
 
     #endregion
-/*
-    #region Coroutine Sequence
-    IEnumerator MultiSpinSequence()
-    {
-        isMultispinCoroutine = true;
-        //yield return StartCoroutine(ActivateSpinner());
-       // yield return StartCoroutine(LidTrigger());
-        //yield return StartCoroutine(SetSpinnerTubeActivate());
-        //yield return StartCoroutine(ActivateSpinner());
-        yield return new WaitForSeconds(3f);
-        if (!isBalanced) {  } //explode;
-        isMultispinCoroutine = false;
-        yield break;
+    /*
+        #region Coroutine Sequence
+        IEnumerator MultiSpinSequence()
+        {
+            isMultispinCoroutine = true;
+            //yield return StartCoroutine(ActivateSpinner());
+           // yield return StartCoroutine(LidTrigger());
+            //yield return StartCoroutine(SetSpinnerTubeActivate());
+            //yield return StartCoroutine(ActivateSpinner());
+            yield return new WaitForSeconds(3f);
+            if (!isBalanced) {  } //explode;
+            isMultispinCoroutine = false;
+            yield break;
 
-    }
-    #endregion
-*/
+        }
+        #endregion
+    */
 
     #region Coroutine Methods
     IEnumerator ActivateSpinner()
@@ -188,25 +196,25 @@ public class MultiSpin : MonoBehaviour
         isSpinCoroutine = false;
         yield break;
     }
-/*
-    IEnumerator LidTrigger()
-    {
+    /*
+        IEnumerator LidTrigger()
+        {
 
-        Debug.Log("--Lid Opens--" + isLidOpened);
-        if (isLidOpened)
-        {
-            lid.transform.localEulerAngles = new Vector3(-165, 0, -90); //close
-        }
-        else
-        {
-            lid.transform.localEulerAngles = new Vector3(-270, 0, -90); //open
-        }
-        yield break;
-    }*/
+            Debug.Log("--Lid Opens--" + isLidOpened);
+            if (isLidOpened)
+            {
+                lid.transform.localEulerAngles = new Vector3(-165, 0, -90); //close
+            }
+            else
+            {
+                lid.transform.localEulerAngles = new Vector3(-270, 0, -90); //open
+            }
+            yield break;
+        }*/
 
     IEnumerator ResultCoroutine()
     {
-        if (hasResult) yield break; 
+        if (hasResult) yield break;
 
         isResultCoroutine = true;
 
@@ -216,6 +224,7 @@ public class MultiSpin : MonoBehaviour
         }
         else {
             correctImage.enabled = true;
+            audioSource.PlayOneShot(correctClip);
         }
         hasResult = true;
         isResultCoroutine = false;
@@ -229,12 +238,37 @@ public class MultiSpin : MonoBehaviour
         {
             explosion.enableEmission = true;
             explosion.Play(true);
+            audioSource.PlayOneShot(explodeClip);
             yield return new WaitForSeconds(1);
             explosion.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             explosion.enableEmission = false;
             yield return ResultCoroutine();
             //yield return StartCoroutine(MultiSpinSequence());
         }
+    }
+
+    public void ResetMultiSpin()
+    {
+        isLidOpened = false;
+        isBalanced = false;
+        isSpinning = false;
+        isSpinnerTriggered = false;
+        isMultispinCoroutine = false;
+
+        //close the lid
+        if (PhotonNetwork.IsConnected)
+            View.RPC("PhotonSetLid", RpcTarget.AllBuffered);
+
+        // reset the test tube's position
+        foreach (TestTube testTube in testTubeList)
+        {
+            testTube.OnReset();
+        }
+        //reset the lock's status
+        foreach (MultiSpinTestTubeLock testTubeLock in testTubeLocks) { 
+            testTubeLock.OnReset();
+        }
+
     }
     #endregion
 
@@ -300,7 +334,7 @@ public class MultiSpin : MonoBehaviour
                 break;
         }
     }
-
+/*
     void CheckSpinning()
     {
         if (spinSpeed > 0)
@@ -312,7 +346,7 @@ public class MultiSpin : MonoBehaviour
             isSpinning = false;
         }
     }
-
+*/
     int CheckTestTubeAmount()
     {
         int value = 0;
@@ -364,7 +398,7 @@ public class MultiSpin : MonoBehaviour
         currentSequence = "Correct Sequence(s):\n";
         for (int i = 0; i < correctArrangement.Count; i++)
         {
-            string sequence = "Sequence " + (i+1) + ":\n";
+            string sequence = "Sequence " + (i + 1) + ":\n";
             for (int j = 0; j < correctArrangement[i].Length; j++)
             {
                 sequence += "TestTube " + j + ": " + correctArrangement[i][j].ToString() + "\n";
@@ -401,8 +435,6 @@ public class MultiSpin : MonoBehaviour
         Debug.Log(text);
     }
     #endregion
-
-    #region Intermediate Methods (private)
     private bool CompareBooleanArrays(bool[] boolA, bool[] boolB)
     {
         if (boolA.Length != boolB.Length) return false;
@@ -415,5 +447,7 @@ public class MultiSpin : MonoBehaviour
             return true;
         }
     }
-    #endregion
+
+
 }
+

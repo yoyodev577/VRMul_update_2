@@ -11,7 +11,6 @@ public class MultiSpinTestTubeLock : MonoBehaviour
     private Transform spinner;
     public bool isOccupied = false;
     
-   
     PhotonView View;
     
     // Start is called before the first frame update
@@ -82,6 +81,19 @@ public class MultiSpinTestTubeLock : MonoBehaviour
         Destroy(constraint);
         isOccupied = false;
         testTube.GetComponent<TestTube>().grabbed = false;
+    }
+
+    public void OnReset() { 
+        if(PhotonNetwork.IsConnected)
+        {
+            View.RPC("PhotonReset", RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    private void PhotonReset()
+    {
+        isOccupied = false;
     }
 
 }

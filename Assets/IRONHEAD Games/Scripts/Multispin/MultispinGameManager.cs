@@ -27,6 +27,8 @@ public class MultispinGameManager : MonoBehaviour
     public bool IsReadyTimerCoroutine = false;
 
     public TMP_Text uiBoard;
+    private AudioSource _audioSource;
+    [SerializeField] private AudioClip _audioClip;
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +37,7 @@ public class MultispinGameManager : MonoBehaviour
         _view = GetComponent<PhotonView>();
         _playerButtons = FindObjectsOfType<PlayerButton>().ToList();
         _multiSpin = FindObjectsOfType<MultiSpin>().ToList();
+        _audioSource = GetComponent<AudioSource>();
         InitGame();
     }
 
@@ -187,6 +190,7 @@ public class MultispinGameManager : MonoBehaviour
             UpdateBoardText(currentSec.ToString());
             yield return new WaitForSeconds(1f);
             currentSec -= 1;
+            _audioSource.PlayOneShot(_audioClip);
         }
 
         if (currentSec <= 0)

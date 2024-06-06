@@ -44,49 +44,57 @@ public class HandsAnimationController : MonoBehaviour
         gripInputAction.Disable();
         triggerInputAction.Disable();
     }
-   
+
     private void TriggerPressed(InputAction.CallbackContext obj)
     {
         // HandAnimator.SetFloat("Trigger_"+WhichHand, obj.ReadValue<float>());
         // DebugUIManager.instance.ShowDebugUIMessage("pressed");
-        
+
 
         // DebugUIManager.instance.ShowDebugUIMessage(obj.ReadValue<float>().ToString());
-        if(WhichHand == "Left"){
+        if (WhichHand == "Left") {
             animL.SetTrigger("Fist");
 
-            if(obj.ReadValue<float>() - currentPressed_trigger >0){
+            if (obj.ReadValue<float>() - currentPressed_trigger > 0) {
 
-               // if (PhotonNetwork.IsConnected)
-                    View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered,"trigger",0.6f);
-            }else{
+                 if (PhotonNetwork.IsConnected)
+                View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered, "trigger", 0.6f);
 
-               // if (PhotonNetwork.IsConnected)
-                    View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered,"trigger",0.4f);
+                //PhotonSetFloatL("trigger", 0.6f);
+            } else {
+
+                 if (PhotonNetwork.IsConnected)
+                View.RPC("PhotonSetFloatL", RpcTarget.AllBuffered, "trigger", 0.4f);
+
+
+                //PhotonSetFloatL("trigger", 0.4f);
             }
-            currentPressed_trigger=obj.ReadValue<float>();
+            currentPressed_trigger = obj.ReadValue<float>();
             // animL.SetFloat("grab",obj.ReadValue<float>());
-            
-        }else{
+
+        } else if (WhichHand == "Right")
+        {
             // RightHandAnimator.SetFloat("grip",obj.ReadValue<float>());
             if(obj.ReadValue<float>() - currentPressed_triggerR >0){
 
-                //if (PhotonNetwork.IsConnected)
+                    if (PhotonNetwork.IsConnected)
                     View.RPC("PhotonSetFloatR", RpcTarget.AllBuffered,"trigger",0.6f);
 
 
-                PhotonSetFloatR("trigger", 0.6f);
+                //PhotonSetFloatR("trigger", 0.6f);
             }else{
 
-               // if (PhotonNetwork.IsConnected)
+                    if (PhotonNetwork.IsConnected)
                     View.RPC("PhotonSetFloatR", RpcTarget.AllBuffered,"trigger",0.4f);
 
 
-                PhotonSetFloatR("trigger", 0.4f);
+                //PhotonSetFloatR("trigger", 0.4f);
             }
-            currentPressed_triggerR=obj.ReadValue<float>();
+           // Debug.Log("Right Hand Pressed " + obj.ReadValue<float>());
+
+            currentPressed_triggerR =obj.ReadValue<float>();
         }
-        // Debug.Log("Trigger Pressed " + obj.ReadValue<float>());
+  
     }
     [PunRPC]
     public void PhotonSetFloatR(string name, float value){

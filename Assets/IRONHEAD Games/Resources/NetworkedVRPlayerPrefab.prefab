@@ -3940,14 +3940,14 @@ CharacterController:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 262144
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 2
-  m_Radius: 0.25
+  m_Radius: 0.16
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -4097,10 +4097,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4951164431195237086}
+  - component: {fileID: 5898695071767508581}
   - component: {fileID: 4951164431195237087}
   - component: {fileID: 6456413880855667971}
   - component: {fileID: 4574040271140935935}
-  - component: {fileID: 5898695071767508581}
   - component: {fileID: 5956325743148338487}
   m_Layer: 0
   m_Name: Right Hand Parent
@@ -4126,6 +4126,59 @@ Transform:
   m_Father: {fileID: 4951164431032722625}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5898695071767508581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4951164431195237085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4859f98281af9548aecb9dca3c46ec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gripInputAction:
+    m_Name: Grip Input
+    m_Type: 0
+    m_ExpectedControlType: Analog
+    m_Id: 9975f21e-239e-4d3a-82e5-9f5953de6e6d
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: f867b90f-9b3f-43f4-a574-db9fd6b28b39
+      m_Path: <XRController>{RightHand}/grip
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Grip Input
+      m_Flags: 0
+    m_Flags: 0
+  triggerInputAction:
+    m_Name: Trigger Input
+    m_Type: 0
+    m_ExpectedControlType: Analog
+    m_Id: 9e89ecca-1309-4cf2-9d8f-664c0a7a660a
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: e9e66fd1-87b5-4cc7-a97a-765fcec7c2af
+      m_Path: <XRController>{RightHand}/grip
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Trigger Input
+      m_Flags: 0
+    m_Flags: 0
+  WhichHand: Right
+  animL: {fileID: 447244033806183811}
+  animR: {fileID: 6765807425518026387}
+  currentPressed: 0
+  currentPressedR: 0
+  currentPressed_trigger: 0
+  currentPressed_triggerR: 0
 --- !u!114 &4951164431195237087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4397,59 +4450,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hand: {fileID: 6125926864569452278}
---- !u!114 &5898695071767508581
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4951164431195237085}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4859f98281af9548aecb9dca3c46ec7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gripInputAction:
-    m_Name: Grip Input
-    m_Type: 0
-    m_ExpectedControlType: Analog
-    m_Id: 9975f21e-239e-4d3a-82e5-9f5953de6e6d
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: f867b90f-9b3f-43f4-a574-db9fd6b28b39
-      m_Path: <ViveFocus3Controller>{RightHand}/grip
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Grip Input
-      m_Flags: 0
-    m_Flags: 0
-  triggerInputAction:
-    m_Name: Trigger Input
-    m_Type: 0
-    m_ExpectedControlType: Analog
-    m_Id: 9e89ecca-1309-4cf2-9d8f-664c0a7a660a
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: e9e66fd1-87b5-4cc7-a97a-765fcec7c2af
-      m_Path: <ViveFocus3Controller>{RightHand}/trigger
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Trigger Input
-      m_Flags: 0
-    m_Flags: 0
-  WhichHand: Right
-  animL: {fileID: 447244033806183811}
-  animR: {fileID: 6765807425518026387}
-  currentPressed: 0
-  currentPressedR: 0
-  currentPressed_trigger: 0
-  currentPressed_triggerR: 0
 --- !u!114 &5956325743148338487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5251,8 +5251,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4951164431679785401}
-  - component: {fileID: 4951164431679785402}
   - component: {fileID: 7534125680130964209}
+  - component: {fileID: 4951164431679785402}
   - component: {fileID: 4208350913173531119}
   - component: {fileID: 7900559806240372276}
   - component: {fileID: 5287377283352305095}
@@ -5281,26 +5281,6 @@ Transform:
   m_Father: {fileID: 4951164431032722625}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4951164431679785402
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4951164431679785400}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42d30391b968cc54c8a24a8df548f541, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIController: {fileID: 4951164431672444263}
-  BaseController: {fileID: 4951164430440280292}
-  inputActionReference_UISwitcher: {fileID: -3834748236965117021, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  UIPanels_Gameobject: {fileID: 8043707638508301587}
-  InformativeUI_Gameobject: {fileID: 0}
-  AvatarSelectionPlatform_Gameobject: {fileID: 0}
-  positionOffsetForUICanvasGameobject: {x: 0, y: 0, z: 0}
-  alwaysAppearInFront: 0
 --- !u!114 &7534125680130964209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5354,6 +5334,26 @@ MonoBehaviour:
   currentPressedR: 0
   currentPressed_trigger: 0
   currentPressed_triggerR: 0
+--- !u!114 &4951164431679785402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4951164431679785400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42d30391b968cc54c8a24a8df548f541, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UIController: {fileID: 4951164431672444263}
+  BaseController: {fileID: 4951164430440280292}
+  inputActionReference_UISwitcher: {fileID: -3834748236965117021, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  UIPanels_Gameobject: {fileID: 8043707638508301587}
+  InformativeUI_Gameobject: {fileID: 0}
+  AvatarSelectionPlatform_Gameobject: {fileID: 0}
+  positionOffsetForUICanvasGameobject: {x: 0, y: 0, z: 0}
+  alwaysAppearInFront: 0
 --- !u!114 &4208350913173531119
 MonoBehaviour:
   m_ObjectHideFlags: 0

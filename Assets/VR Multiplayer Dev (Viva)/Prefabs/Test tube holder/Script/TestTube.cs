@@ -44,4 +44,11 @@ public class TestTube : MonoBehaviour
         transform.position = startPos;
     
     }
+
+    public void OnReset() {
+        if (PhotonNetwork.IsConnected)
+            View.RPC("PhotonOnCollision", RpcTarget.AllBuffered);
+        
+        grabbed = false;
+    }
 }

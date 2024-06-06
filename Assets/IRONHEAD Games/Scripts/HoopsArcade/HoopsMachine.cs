@@ -32,7 +32,7 @@ public class HoopsMachine : MonoBehaviour
         for (int i = 0; i < m_Struct.balls.childCount; i++)
         {
             GameObject ball = m_Struct.balls.GetChild(i).gameObject;
-            ball.transform.position = m_Struct.spawnPts.GetChild(i).position;       
+            ball.transform.position = m_Struct.spawnPts.GetChild(0).position;       
         }
     }
     public int GetScore() {

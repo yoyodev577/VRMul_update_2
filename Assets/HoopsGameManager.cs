@@ -191,27 +191,6 @@ public class HoopsGameManager : MonoBehaviour
     private void PhotonHoopsReset()
     {
         Debug.Log("---Game Reset---");
-        ResetGame();
-    }
-
-
-    public void StartTimer() {
-        if (PhotonNetwork.IsConnected)
-            _view.RPC("PhotonStartTimer", RpcTarget.AllBuffered);
-
-    }
-
-    [PunRPC]
-    private void PhotonStartTimer()
-    {
-        if(!IsReadyTimerCoroutine)
-        StartCoroutine(SetReadyTimerCoroutine(timerSec));
-    }
-
-
-
-    private void ResetGame()
-    {
         foreach (HoopsMachine m in _machines)
         {
             m.BallReset();
@@ -228,9 +207,27 @@ public class HoopsGameManager : MonoBehaviour
         isPlayer1Win = false;
 
         IsReset = true;
-        if(!IsResetCoroutine)
-        StartCoroutine(ResetCoroutine());
+
+        if (!IsResetCoroutine)
+            StartCoroutine(ResetCoroutine());
+
+        UpdateBoardText("Press Ready to start the game.");
     }
+
+
+    public void StartTimer() {
+        if (PhotonNetwork.IsConnected)
+            _view.RPC("PhotonStartTimer", RpcTarget.AllBuffered);
+
+    }
+
+    [PunRPC]
+    private void PhotonStartTimer()
+    {
+        if(!IsReadyTimerCoroutine)
+        StartCoroutine(SetReadyTimerCoroutine(timerSec));
+    }
+
 
     private void ShowResult()
     {

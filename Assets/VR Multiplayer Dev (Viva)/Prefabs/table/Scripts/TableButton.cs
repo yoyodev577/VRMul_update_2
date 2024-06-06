@@ -120,4 +120,14 @@ public class TableButton : MonoBehaviour
             buttonRenderer.material = buttonMaterials[0];
     }
 
+    public void ResetButton()
+    {
+        isPressed = false;
+        IsButtonCoroutine = false;
+        if (PhotonNetwork.IsConnected)
+            _view.RPC("FlashButton", RpcTarget.AllBuffered, isPressed);
+
+    }
+
+
 }
