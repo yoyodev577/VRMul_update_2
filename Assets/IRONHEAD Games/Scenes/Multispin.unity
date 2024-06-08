@@ -5975,6 +5975,10 @@ PrefabInstance:
       propertyPath: correctImage
       value: 
       objectReference: {fileID: 1770405380}
+    - target: {fileID: 8761207819275652532, guid: d5c2b00499908fe44beaeef5b38bd8b6, type: 3}
+      propertyPath: testTubeParent
+      value: 
+      objectReference: {fileID: 244643442}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

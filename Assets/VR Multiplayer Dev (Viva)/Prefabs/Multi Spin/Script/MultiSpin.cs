@@ -17,11 +17,12 @@ public class MultiSpin : MonoBehaviour
     //Spinner variables
     [SerializeField]
     private GameObject spinner;
-    private float spinSpeed = 0;
-    private bool isSpinning;
+    [SerializeField] private float spinSpeed = 0;
     [SerializeField] private GameObject pivot;
     [SerializeField] private GameObject lid;
 
+    [SerializeField] private bool isSpinning;
+    [SerializeField] private bool isSpinningFinished = false;
     [SerializeField] private bool isLidOpened = false;
     [SerializeField] private bool isMultispinCoroutine = false;
     [SerializeField] private bool isSpinnerTriggered = false;
@@ -37,7 +38,7 @@ public class MultiSpin : MonoBehaviour
     //Test tube position checking variables
     [SerializeField]
     private int defaultTubeAmount = 3;
-    private int spinnerPosCount;
+    [SerializeField] private int spinnerPosCount;
     [SerializeField] private bool[] testTubePlaceholder;
     [SerializeField] private List<bool[]> correctArrangement;
     public bool isBalanced = false;
@@ -64,7 +65,7 @@ public class MultiSpin : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         testTubeList.AddRange(testTubeParent.transform.GetComponentsInChildren<TestTube>());
         testTubeLocks.AddRange(spinner.transform.GetComponentsInChildren<MultiSpinTestTubeLock>());
-        
+
         InitGame();
     }
 
@@ -88,9 +89,13 @@ public class MultiSpin : MonoBehaviour
     public void PhotonUpdate() {
         //lid.GetComponent<Rigidbody>().isKinematic = isMultispinCoroutine;
         // CheckSpinning();
+        SetSpinner();
         CheckTestTubePos();
         TubeCorrectSequence(CheckTestTubeAmount());
         CheckSpinnerBalance();
+
+        if(!hasResult)
+        ShowResult();
         //SetDebugText();
         //SetCorrectPlacingText();
     }
@@ -112,11 +117,23 @@ public class MultiSpin : MonoBehaviour
     [PunRPC]
     public void PhotonSetLid() {
 
-        Debug.Log("--Lid Opens--" + isLidOpened);
         if (!isLidOpened)
         {
-            lid.transform.localEulerAngles = new Vector3(-165, 0, -90); //close
+            lid.transform.localEulerAngles = new Vector3(-270, 0, -90); //open
 
+        }
+        else
+        {
+            lid.transform.localEulerAngles = new Vector3(-165, 0, -90); //close
+        }
+        Debug.Log("--Lid Opens--" + isLidOpened);
+
+    }
+    public void SetSpinner() {
+
+
+        if (!isLidOpened)
+        {
             foreach (MultiSpinTestTubeLock testTubeLock in testTubeLocks)
             {
                 if (testTubeLock.isOccupied)
@@ -129,12 +146,23 @@ public class MultiSpin : MonoBehaviour
 
             }
         }
-        else
-        {
-            lid.transform.localEulerAngles = new Vector3(-270, 0, -90); //open
-
+        else {
+            if (isSpinCoroutine)
+            {
+                StopCoroutine(ActivateSpinner());
+                isSpinCoroutine = false;
+            }
         }
+    }
 
+    public void ShowResult() {            
+        
+        Debug.Log("---Show Result---");
+        if (hasResult && isSpinningFinished && !isResultCoroutine)
+        {
+            Debug.Log("--Result Coroutine---");
+            StartCoroutine(ResultCoroutine());
+        }
 
     }
 
@@ -164,35 +192,31 @@ public class MultiSpin : MonoBehaviour
         Debug.Log("---Adjust Spin Speed");
         if (!isLidOpened)     //Spinner should only accelerate/decelerate when the lid is closed; and when awoke (default not spinning)
         {
-            if (!isSpinning)          //Not spinning: Accelerate
+            if (!isSpinningFinished)
             {
-                while (spinSpeed < 15)
+                if (!isSpinning)
                 {
-                    spinSpeed += .15f;
-                    isSpinning = true;
-                    SetSpinnerTubeActivate(false);
-                    yield return null;
+                    while (spinSpeed < 20)
+                    {
+                        spinSpeed += .15f;
+                        isSpinning = true;
+                        spinner.transform.Rotate(Vector3.forward * spinSpeed);
+                        yield return null;
+                    }
+
                 }
+
+                Debug.Log("--Spinning---Speed : " + spinSpeed);
             }
-            else                     //Spinning: Decelerate
-            {
-                while (spinSpeed > 0)
-                {
-                    spinSpeed -= .15f;
-                    isSpinning = true;
-                    SetSpinnerTubeActivate(false);
-                    yield return null;
-                }
-            }
-        }
-        else {
-            spinSpeed = 0;
-            isSpinning = false;
-            SetSpinnerTubeActivate(true);
+
         }
 
-        spinner.transform.Rotate(Vector3.forward * spinSpeed);
-        isSpinnerTriggered = false;
+        if(spinSpeed > 20)
+        {
+            isSpinningFinished = true;
+        }
+
+
         isSpinCoroutine = false;
         yield break;
     }
@@ -214,15 +238,15 @@ public class MultiSpin : MonoBehaviour
 
     IEnumerator ResultCoroutine()
     {
-        if (hasResult) yield break;
-
         isResultCoroutine = true;
 
         if (!isBalanced)
         {
+            Debug.Log("--Result : Exploded---");
             yield return StartCoroutine(Explode());
         }
         else {
+            Debug.Log("--Result : Correct---");
             correctImage.enabled = true;
             audioSource.PlayOneShot(correctClip);
         }
@@ -234,7 +258,7 @@ public class MultiSpin : MonoBehaviour
 
     IEnumerator Explode()
     {
-        if (isSpinning && !isBalanced)
+        if (!isBalanced)
         {
             explosion.enableEmission = true;
             explosion.Play(true);
@@ -242,7 +266,7 @@ public class MultiSpin : MonoBehaviour
             yield return new WaitForSeconds(1);
             explosion.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             explosion.enableEmission = false;
-            yield return ResultCoroutine();
+            yield return null;
             //yield return StartCoroutine(MultiSpinSequence());
         }
     }
@@ -265,7 +289,7 @@ public class MultiSpin : MonoBehaviour
             testTube.OnReset();
         }
         //reset the lock's status
-        foreach (MultiSpinTestTubeLock testTubeLock in testTubeLocks) { 
+        foreach (MultiSpinTestTubeLock testTubeLock in testTubeLocks) {
             testTubeLock.OnReset();
         }
 
@@ -279,10 +303,6 @@ public class MultiSpin : MonoBehaviour
         bool[] correctPlacings = new bool[spinnerPosCount];
         switch (tubeNumber)
         {
-            case 0:
-                correctPlacings = new bool[spinnerPosCount];
-                correctArrangement.Add(correctPlacings);
-                break;
             case 2:
                 correctPlacings = new bool[spinnerPosCount];
                 correctPlacings[0] = correctPlacings[4] = true;
@@ -334,19 +354,19 @@ public class MultiSpin : MonoBehaviour
                 break;
         }
     }
-/*
-    void CheckSpinning()
-    {
-        if (spinSpeed > 0)
+    /*
+        void CheckSpinning()
         {
-            isSpinning = true;
+            if (spinSpeed > 0)
+            {
+                isSpinning = true;
+            }
+            else
+            {
+                isSpinning = false;
+            }
         }
-        else
-        {
-            isSpinning = false;
-        }
-    }
-*/
+    */
     int CheckTestTubeAmount()
     {
         int value = 0;
@@ -379,7 +399,16 @@ public class MultiSpin : MonoBehaviour
 
     void CheckSpinnerBalance()
     {
-        if (!isLidOpened)
+        int occupiedIndex = 0;
+        foreach(MultiSpinTestTubeLock l in testTubeLocks)
+        {
+            if (l.isOccupied)
+                occupiedIndex++;
+        }
+
+        Debug.Log("OccupiedIndex : " + occupiedIndex);
+
+        if (!isLidOpened && occupiedIndex > 0)
         {
             isBalanced = false;
             for (int i = 0; i < correctArrangement.Count; i++)
@@ -390,6 +419,9 @@ public class MultiSpin : MonoBehaviour
                     break;
                 }
             }
+            hasResult = true;
+
+            Debug.Log("----Check Balance---- : " + isBalanced);
         }
     }
 

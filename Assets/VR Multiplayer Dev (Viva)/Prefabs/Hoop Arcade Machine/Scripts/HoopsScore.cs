@@ -79,7 +79,7 @@ public class HoopsScore : MonoBehaviour
         }
         else if (correct == isCorrect && !correct)
         {
-            score += 1;
+           // score += 1;
             infoBoard.text = "Incorrect!";
         }
         isCorrect = false;

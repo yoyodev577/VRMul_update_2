@@ -156,8 +156,11 @@ public class HoopsGameManager : MonoBehaviour
     {
         Debug.Log("---Game Ready To Start---");
         if (isPlayersReady && !IsReadyToStart) {
-            IsReadyToStart = true;
-            _gameState = GameState.ReadyToStart;
+            if (_playerButtons[0].isPressed && _playerButtons[1].isPressed)
+            {
+                IsReadyToStart = true;
+                _gameState = GameState.ReadyToStart;
+            }
         }
     }
 
