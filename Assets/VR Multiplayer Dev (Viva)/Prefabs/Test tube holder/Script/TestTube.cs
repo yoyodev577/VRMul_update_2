@@ -5,6 +5,7 @@ using Photon.Pun;
 
 public class TestTube : MonoBehaviour
 {
+    public MultiSpin multispin;
     private Vector3 startPos;
     [SerializeField]
     private GameObject cap, body;
@@ -24,6 +25,7 @@ public class TestTube : MonoBehaviour
     }
     [PunRPC]
     public void PhotonGrab(){
+        if(!multispin.isLidOpened || !multispin.isSpinning)
         grabbed = true;
     }
 

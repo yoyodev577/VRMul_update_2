@@ -21,9 +21,9 @@ public class MultiSpin : MonoBehaviour
     [SerializeField] private GameObject pivot;
     [SerializeField] private GameObject lid;
 
-    [SerializeField] private bool isSpinning;
-    [SerializeField] private bool isSpinningFinished = false;
-    [SerializeField] private bool isLidOpened = false;
+    [SerializeField] public bool isSpinning;
+    [SerializeField] public bool isSpinningFinished = false;
+    [SerializeField] public bool isLidOpened = false;
     [SerializeField] private bool isMultispinCoroutine = false;
     [SerializeField] private bool isSpinnerTriggered = false;
     [SerializeField] private bool hasResult = false;
@@ -103,6 +103,9 @@ public class MultiSpin : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!MultispinGameManager.instance.IsGameStart)
+            return;
+
         if (other.gameObject.tag == "Hand") {
 
             if (PhotonNetwork.IsConnected)
@@ -157,8 +160,8 @@ public class MultiSpin : MonoBehaviour
 
     public void ShowResult() {            
         
-        Debug.Log("---Show Result---");
-        if (hasResult && isSpinningFinished && !isResultCoroutine)
+        Debug.Log("---Show Result---RESULT : " + hasResult);
+        if (isSpinningFinished && !isResultCoroutine)
         {
             Debug.Log("--Result Coroutine---");
             StartCoroutine(ResultCoroutine());
@@ -213,6 +216,7 @@ public class MultiSpin : MonoBehaviour
 
         if(spinSpeed > 20)
         {
+            Debug.Log("--Spinning finished---");
             isSpinningFinished = true;
         }
 
@@ -260,12 +264,12 @@ public class MultiSpin : MonoBehaviour
     {
         if (!isBalanced)
         {
-            explosion.enableEmission = true;
+            //explosion.enableEmission = true;
             explosion.Play(true);
             audioSource.PlayOneShot(explodeClip);
             yield return new WaitForSeconds(1);
             explosion.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            explosion.enableEmission = false;
+            //explosion.enableEmission = false;
             yield return null;
             //yield return StartCoroutine(MultiSpinSequence());
         }
@@ -273,6 +277,8 @@ public class MultiSpin : MonoBehaviour
 
     public void ResetMultiSpin()
     {
+        Debug.Log("---Reset Spin----");
+
         isLidOpened = false;
         isBalanced = false;
         isSpinning = false;
@@ -292,6 +298,8 @@ public class MultiSpin : MonoBehaviour
         foreach (MultiSpinTestTubeLock testTubeLock in testTubeLocks) {
             testTubeLock.OnReset();
         }
+
+        correctImage.enabled = false;
 
     }
     #endregion
@@ -419,8 +427,7 @@ public class MultiSpin : MonoBehaviour
                     break;
                 }
             }
-            hasResult = true;
-
+            //hasResult = true;
             Debug.Log("----Check Balance---- : " + isBalanced);
         }
     }

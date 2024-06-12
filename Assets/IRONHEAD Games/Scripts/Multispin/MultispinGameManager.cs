@@ -11,7 +11,7 @@ public class MultispinGameManager : MonoBehaviour
     private PhotonView _view;
 
     [SerializeField] private List<PlayerButton> _playerButtons;
-    [SerializeField] private List<MultiSpin> _multiSpin;
+    [SerializeField] private List<MultiSpin> _multiSpins;
 
     [SerializeField] 
     private GameState _gameState = GameState.Default;
@@ -36,7 +36,7 @@ public class MultispinGameManager : MonoBehaviour
         instance = this;
         _view = GetComponent<PhotonView>();
         _playerButtons = FindObjectsOfType<PlayerButton>().ToList();
-        _multiSpin = FindObjectsOfType<MultiSpin>().ToList();
+        _multiSpins = FindObjectsOfType<MultiSpin>().ToList();
         _audioSource = GetComponent<AudioSource>();
         InitGame();
     }
@@ -154,20 +154,20 @@ public class MultispinGameManager : MonoBehaviour
     private void ShowResult() {
         string text = "";
 
-        if (_multiSpin[0].isBalanced && !_multiSpin[1].isBalanced)
+        if (_multiSpins[0].isBalanced && !_multiSpins[1].isBalanced)
         {
-            text = "The game has ended.\nPlayer :" + _multiSpin[0].playerNum + " wins";
+            text = "The game has ended.\nPlayer :" + _multiSpins[0].playerNum + " wins";
 
         }
-        else if (!_multiSpin[0].isBalanced && _multiSpin[1].isBalanced) {
+        else if (!_multiSpins[0].isBalanced && _multiSpins[1].isBalanced) {
 
-            text = "The game has ended.\nPlayer :" + _multiSpin[1].playerNum + " wins";
+            text = "The game has ended.\nPlayer :" + _multiSpins[1].playerNum + " wins";
         }
-        else if (_multiSpin[0].isBalanced && _multiSpin[1].isBalanced)
+        else if (_multiSpins[0].isBalanced && _multiSpins[1].isBalanced)
         {
             text = "The game has ended.Both players win!";
         }
-        else if (!_multiSpin[0].isBalanced && !_multiSpin[1].isBalanced)
+        else if (!_multiSpins[0].isBalanced && !_multiSpins[1].isBalanced)
         {
             text = "The game has ended.Both players lose :(!";
         }
@@ -215,6 +215,11 @@ public class MultispinGameManager : MonoBehaviour
         IsGameStart = false;
         IsGameEnd = false;
         IsReadyTimerCoroutine = false;
+        foreach(MultiSpin m in _multiSpins)
+        {
+            m.ResetMultiSpin(); 
+        }
+
         InitGame();
         yield return new WaitForSeconds(1f);
         IsReset = false;
