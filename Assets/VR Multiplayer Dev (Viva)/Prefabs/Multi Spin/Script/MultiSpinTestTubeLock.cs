@@ -7,8 +7,10 @@ using System.Text.RegularExpressions;
 
 public class MultiSpinTestTubeLock : MonoBehaviour
 {
+    [SerializeField] private MultiSpin multiSpin;
     [SerializeField]
     private Transform spinner;
+    public TestTube occupiedTestTube;
     public bool isOccupied = false;
     
     PhotonView View;
@@ -17,22 +19,23 @@ public class MultiSpinTestTubeLock : MonoBehaviour
     void Start()
     {
         View = GetComponent<PhotonView>();
+        multiSpin = GetComponentInParent<MultiSpin>();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
 
     void OnTriggerEnter(Collider other)
     {
+        if (!MultispinGameManager.instance.IsGameStart) return;
+
+        if (multiSpin.isSpinning || multiSpin.isSpinningFinished || !multiSpin.isLidOpened) return;
+
+
         if(other.gameObject.GetComponent<TestTube>() != null && !isOccupied)
         {
-            if(other.GetComponent<TestTube>().grabbed == true){
+            if(other.GetComponent<TestTube>().grabbed == true && !multiSpin.isSpinning){
                 GameObject testTube = other.gameObject;
-                PhotonView testTubePhotonView = testTube.GetComponent<PhotonView>();
+                occupiedTestTube = testTube.GetComponent<TestTube>(); 
+                PhotonView testTubePhotonView = occupiedTestTube.GetComponent<PhotonView>();
+                multiSpin.SetLockedTestTube(occupiedTestTube, true);
                 View.RPC("PhotonTriggerEnter", RpcTarget.AllBuffered,testTubePhotonView.ViewID);
                 
             }
@@ -43,6 +46,8 @@ public class MultiSpinTestTubeLock : MonoBehaviour
 
     [PunRPC]
     public void PhotonTriggerEnter(int testTubeID){
+
+        Debug.Log("---TestTube Lock Trigger --");
         DebugUIManager.instance.ShowDebugUIMessage("Enter");
         PhotonView testTubePhotonView = PhotonView.Find(testTubeID);
         GameObject testTube = testTubePhotonView.gameObject;
@@ -54,7 +59,9 @@ public class MultiSpinTestTubeLock : MonoBehaviour
         constraint.constraintActive = true;
         isOccupied = true;
         testTube.GetComponent<TestTube>().grabbed = false;
-        
+
+
+
     }
 
     void OnTriggerExit(Collider other)
@@ -66,7 +73,9 @@ public class MultiSpinTestTubeLock : MonoBehaviour
             if(other.GetComponent<TestTube>().grabbed == true){
                 testTube = other.gameObject;
                 testTubePhotonView = testTube.GetComponent<PhotonView>();
+                multiSpin.SetLockedTestTube(occupiedTestTube, false);
                 View.RPC("PhotonOnTriggerExit", RpcTarget.AllBuffered,testTubePhotonView.ViewID);
+                occupiedTestTube = null;
             }
             
         }
@@ -81,12 +90,14 @@ public class MultiSpinTestTubeLock : MonoBehaviour
         Destroy(constraint);
         isOccupied = false;
         testTube.GetComponent<TestTube>().grabbed = false;
+
     }
 
-    public void OnReset() { 
+    public void OnReset() {
+        
         if(PhotonNetwork.IsConnected)
         {
-            View.RPC("PhotonReset", RpcTarget.All);
+            View.RPC("PhotonReset", RpcTarget.AllBuffered);
         }
     }
 
@@ -94,6 +105,7 @@ public class MultiSpinTestTubeLock : MonoBehaviour
     private void PhotonReset()
     {
         isOccupied = false;
+        occupiedTestTube = null;
     }
 
 }

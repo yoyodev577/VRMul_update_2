@@ -13,6 +13,9 @@ public class MultiSpin : MonoBehaviour
 {
     #region Variable Declaration
 
+    [SerializeField] private MultispinGameManager gameManager;
+
+
     public int playerNum = 0;
     //Spinner variables
     [SerializeField]
@@ -25,8 +28,8 @@ public class MultiSpin : MonoBehaviour
     [SerializeField] public bool isSpinningFinished = false;
     [SerializeField] public bool isLidOpened = false;
     [SerializeField] private bool isMultispinCoroutine = false;
-    [SerializeField] private bool isSpinnerTriggered = false;
-    [SerializeField] private bool hasResult = false;
+    [SerializeField] public bool isSpinnerTriggered = false;
+    [SerializeField] public bool hasResult = false;
     [SerializeField] private bool isSpinCoroutine = false;
     [SerializeField] private bool isResultCoroutine = false;
 
@@ -34,6 +37,7 @@ public class MultiSpin : MonoBehaviour
 
     [SerializeField] private List<TestTube> testTubeList = new List<TestTube>();
     [SerializeField] private List<MultiSpinTestTubeLock> testTubeLocks = new List<MultiSpinTestTubeLock>();
+    [SerializeField] private List<TestTube> lockedTestTube = new List<TestTube>();
 
     //Test tube position checking variables
     [SerializeField]
@@ -63,6 +67,7 @@ public class MultiSpin : MonoBehaviour
     {
         View = GetComponent<PhotonView>();
         audioSource = GetComponent<AudioSource>();
+        gameManager = FindObjectOfType<MultispinGameManager>();
         testTubeList.AddRange(testTubeParent.transform.GetComponentsInChildren<TestTube>());
         testTubeLocks.AddRange(spinner.transform.GetComponentsInChildren<MultiSpinTestTubeLock>());
 
@@ -89,24 +94,24 @@ public class MultiSpin : MonoBehaviour
     public void PhotonUpdate() {
         //lid.GetComponent<Rigidbody>().isKinematic = isMultispinCoroutine;
         // CheckSpinning();
-        SetSpinner();
-        CheckTestTubePos();
-        TubeCorrectSequence(CheckTestTubeAmount());
-        CheckSpinnerBalance();
+        if (MultispinGameManager.instance.IsGameStart && !MultispinGameManager.instance.IsGameEnd) {
+            if (!hasResult)
+            {
+                Debug.Log("---Update---------");
+                SetSpinner();
+                CheckTestTubePos();
+                TubeCorrectSequence(CheckTestTubeAmount());
+                CheckSpinnerBalance();
+                ShowResult();
 
-        if(!hasResult)
-        ShowResult();
-        //SetDebugText();
-        //SetCorrectPlacingText();
+            }
+        }
     }
 
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!MultispinGameManager.instance.IsGameStart)
-            return;
-
-        if (other.gameObject.tag == "Hand") {
+        if (gameManager.IsGameStart && other.gameObject.tag == "Hand") {
 
             if (PhotonNetwork.IsConnected)
                 View.RPC("PhotonSetLid", RpcTarget.AllBuffered);
@@ -217,6 +222,7 @@ public class MultiSpin : MonoBehaviour
         if(spinSpeed > 20)
         {
             Debug.Log("--Spinning finished---");
+            isSpinning = false;
             isSpinningFinished = true;
         }
 
@@ -243,18 +249,22 @@ public class MultiSpin : MonoBehaviour
     IEnumerator ResultCoroutine()
     {
         isResultCoroutine = true;
-
-        if (!isBalanced)
+        if (!hasResult)
         {
-            Debug.Log("--Result : Exploded---");
-            yield return StartCoroutine(Explode());
+
+            if (!isBalanced)
+            {
+                Debug.Log("--Result : Exploded---");
+                yield return StartCoroutine(Explode());
+            }
+            else
+            {
+                Debug.Log("--Result : Correct---");
+                correctImage.enabled = true;
+                audioSource.PlayOneShot(correctClip);
+            }
+            hasResult = true;
         }
-        else {
-            Debug.Log("--Result : Correct---");
-            correctImage.enabled = true;
-            audioSource.PlayOneShot(correctClip);
-        }
-        hasResult = true;
         isResultCoroutine = false;
         yield break;
 
@@ -262,17 +272,16 @@ public class MultiSpin : MonoBehaviour
 
     IEnumerator Explode()
     {
-        if (!isBalanced)
-        {
-            //explosion.enableEmission = true;
-            explosion.Play(true);
-            audioSource.PlayOneShot(explodeClip);
-            yield return new WaitForSeconds(1);
-            explosion.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            //explosion.enableEmission = false;
-            yield return null;
-            //yield return StartCoroutine(MultiSpinSequence());
-        }
+
+        //explosion.enableEmission = true;
+        explosion.Play(true);
+        audioSource.PlayOneShot(explodeClip);
+        yield return new WaitForSeconds(1);
+        explosion.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        //explosion.enableEmission = false;
+        yield return null;
+        //yield return StartCoroutine(MultiSpinSequence());
+
     }
 
     public void ResetMultiSpin()
@@ -282,20 +291,23 @@ public class MultiSpin : MonoBehaviour
         isLidOpened = false;
         isBalanced = false;
         isSpinning = false;
+        isSpinningFinished = false;
         isSpinnerTriggered = false;
         isMultispinCoroutine = false;
+        hasResult = false;
 
         //close the lid
-        if (PhotonNetwork.IsConnected)
-            View.RPC("PhotonSetLid", RpcTarget.AllBuffered);
+        lid.transform.localEulerAngles = new Vector3(-165, 0, -90); //close
 
         // reset the test tube's position
-        foreach (TestTube testTube in testTubeList)
+        foreach (TestTube testTube in lockedTestTube)
         {
+            Debug.Log("---Reset TestTube---" + testTube.name);
             testTube.OnReset();
         }
         //reset the lock's status
         foreach (MultiSpinTestTubeLock testTubeLock in testTubeLocks) {
+            Debug.Log("---Reset TestTube Lock---");
             testTubeLock.OnReset();
         }
 
@@ -404,6 +416,29 @@ public class MultiSpin : MonoBehaviour
             }
         }
     }
+
+    public void SetLockedTestTube(TestTube t, bool isAdded) {
+
+        //check all the test tubes which are used.
+        if (testTubeLocks.Count > 0)
+        {
+            if (isAdded)
+            {
+                if (!lockedTestTube.Contains(t))
+                {
+                    lockedTestTube.Add(t);
+                }
+
+            }
+            else {
+                if (lockedTestTube.Contains(t))
+                {
+                    lockedTestTube.Remove(t);
+                }
+            }
+        }
+    }
+
 
     void CheckSpinnerBalance()
     {

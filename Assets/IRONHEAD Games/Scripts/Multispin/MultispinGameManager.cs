@@ -11,6 +11,7 @@ public class MultispinGameManager : MonoBehaviour
     private PhotonView _view;
 
     [SerializeField] private List<PlayerButton> _playerButtons;
+    [SerializeField] private TableButton resetButton;
     [SerializeField] private List<MultiSpin> _multiSpins;
 
     [SerializeField] 
@@ -49,16 +50,34 @@ public class MultispinGameManager : MonoBehaviour
         {
             StartCoroutine(SetReadyTimerCoroutine(timerSec));
         }
-        if (IsGameStart)
+
+        // start the game after the count down.
+        if (!IsGameStart && IsReadyToStart && !IsGameEnd)
         {
             StartGame();
         }
 
+        //end the game when both players have the results.
+        if (IsGameStart && !IsGameEnd) {
+
+            if (_multiSpins[0].hasResult && _multiSpins[1].hasResult)
+            {
+                EndGame();
+            }
+        }
+
+        //reset the game state
+        if(IsGameStart && IsReset)
+        {
+            if (PhotonNetwork.IsConnected)
+                _view.RPC("PhotonResetGame", RpcTarget.AllBuffered);
+        }
 
     }
 
     void InitGame() {
 
+        _gameState = GameState.Default;
         UpdateBoardText("Press Ready to start the game.");
     }
 
@@ -77,6 +96,11 @@ public class MultispinGameManager : MonoBehaviour
             {
                 isPlayersReady = true;
                 _gameState = GameState.PlayersReady;
+            }
+            else
+            {
+                isPlayersReady = false;
+                _gameState = GameState.Default;
             }
         }
     }
@@ -112,7 +136,6 @@ public class MultispinGameManager : MonoBehaviour
     private void PhotonStartGame()
     {
         Debug.Log("---Start the game---");
-        UpdateBoardText("Game Starts");
 
         _gameState = GameState.StartGame;
         IsGameStart = true;
@@ -138,8 +161,8 @@ public class MultispinGameManager : MonoBehaviour
 
     public void ResetGame()
     {
-        if (PhotonNetwork.IsConnected)
-            _view.RPC("PhotonResetGame", RpcTarget.AllBuffered);
+        _gameState = GameState.ResetGame;
+        IsReset = true;
 
     }
 
@@ -187,43 +210,51 @@ public class MultispinGameManager : MonoBehaviour
     {
         IsReadyTimerCoroutine = true;
         currentSec = seconds;
-
+        UpdateBoardText(currentSec.ToString());
         while (currentSec >= 0)
         {
-            UpdateBoardText(currentSec.ToString());
+            _audioSource.PlayOneShot(_audioClip);
             yield return new WaitForSeconds(1f);
             currentSec -= 1;
-            _audioSource.PlayOneShot(_audioClip);
+            UpdateBoardText(currentSec.ToString());
         }
 
         if (currentSec <= 0)
         {
-            yield return null;
-            IsReadyTimerCoroutine = false;
+            _audioSource.Stop();
             IsReadyToStart = false;
             IsGameStart = true;
+            UpdateBoardText("Game Starts");
         }
-
-
+        yield return null;
+        IsReadyTimerCoroutine = false;
     }
 
     IEnumerator ResetCoroutine()
     {
         IsResetCoroutine = true;
+        Debug.Log("---Reset Coroutine---");
         isPlayersReady = false;
         IsReadyToStart = false;
         IsGameStart = false;
         IsGameEnd = false;
         IsReadyTimerCoroutine = false;
+
+        resetButton.ResetButton();
+        foreach(PlayerButton button in _playerButtons)
+        {
+            button.ResetButton();
+        }
+
         foreach(MultiSpin m in _multiSpins)
         {
             m.ResetMultiSpin(); 
         }
-
-        InitGame();
-        yield return new WaitForSeconds(1f);
+        //InitGame();
+        yield return new WaitForSeconds(2f);
         IsReset = false;
         IsResetCoroutine = false;
+        InitGame();
     }
 
 }

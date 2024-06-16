@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.Animations;
 
 public class TestTube : MonoBehaviour
 {
     public MultiSpin multispin;
-    private Vector3 startPos;
-    [SerializeField]
-    private GameObject cap, body;
+    [SerializeField] private Vector3 startPos;
+    [SerializeField] private GameObject cap, body;
     public bool grabbed  = false; //player grabbing the testtube or not
     // Start is called before the first frame update
     PhotonView View;
@@ -25,8 +25,13 @@ public class TestTube : MonoBehaviour
     }
     [PunRPC]
     public void PhotonGrab(){
-        if(!multispin.isLidOpened || !multispin.isSpinning)
-        grabbed = true;
+
+        if (MultispinGameManager.instance.IsGameStart ||
+            !MultispinGameManager.instance.IsGameEnd ||
+            !multispin.isLidOpened || !multispin.isSpinning)
+        {
+            grabbed = true;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -43,6 +48,10 @@ public class TestTube : MonoBehaviour
     [PunRPC]
     public void PhotonOnCollision()
     {
+        Debug.Log("--Reset testtube position--");
+        if(GetComponent<ParentConstraint>() != null)
+           Destroy(GetComponent<ParentConstraint>());
+
         transform.position = startPos;
     
     }
@@ -52,5 +61,6 @@ public class TestTube : MonoBehaviour
             View.RPC("PhotonOnCollision", RpcTarget.AllBuffered);
         
         grabbed = false;
+        //transform.position = startPos;
     }
 }
