@@ -474,6 +474,7 @@ MonoBehaviour:
   timerSec: 3
   IsReadyTimerCoroutine: 0
   questionBoard: {fileID: 1927825468}
+  _audioClip: {fileID: 8300000, guid: 890473b548af83949b2686db84738ffe, type: 3}
 --- !u!82 &252719926
 AudioSource:
   m_ObjectHideFlags: 0

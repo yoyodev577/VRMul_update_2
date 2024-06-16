@@ -214,9 +214,10 @@ public class MultispinGameManager : MonoBehaviour
         while (currentSec >= 0)
         {
             _audioSource.PlayOneShot(_audioClip);
+            UpdateBoardText(currentSec.ToString());
             yield return new WaitForSeconds(1f);
             currentSec -= 1;
-            UpdateBoardText(currentSec.ToString());
+
         }
 
         if (currentSec <= 0)

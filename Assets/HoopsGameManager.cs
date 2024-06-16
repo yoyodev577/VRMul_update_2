@@ -60,11 +60,15 @@ public class HoopsGameManager : MonoBehaviour
         "C",
         "D"
     };
+
+    private AudioSource _audioSource;
+    [SerializeField] private AudioClip _audioClip;
     void Start()
     {
         _instance = this;
         _view = GetComponent<PhotonView>();
         _playerButtons = FindObjectsOfType<PlayerButton>().ToList();
+       _audioSource = GetComponent<AudioSource>();
         InitQuestions();
         InitGame();
     }
@@ -283,11 +287,14 @@ public class HoopsGameManager : MonoBehaviour
 
     // Enable Ready Timer
     IEnumerator SetReadyTimerCoroutine(float seconds) {
+
         IsReadyTimerCoroutine = true;
         currentSec = seconds;
+        UpdateBoardText(currentSec.ToString());
 
         while (currentSec >= 0)
         {
+            _audioSource.PlayOneShot(_audioClip);
             UpdateBoardText(currentSec.ToString());
             yield return new WaitForSeconds(1f);
             currentSec -= 1;
@@ -295,12 +302,12 @@ public class HoopsGameManager : MonoBehaviour
 
         if (currentSec <= 0)
         {
-            yield return null;
-            IsReadyTimerCoroutine = false;
+            _audioSource.Stop();
             IsReadyToStart = false;
             IsGameStart = true;
         }
-
+        yield return null;
+        IsReadyTimerCoroutine = false;
 
     }
 

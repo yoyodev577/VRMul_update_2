@@ -39,8 +39,8 @@ public class Shoot : MonoBehaviour
     public GameObject gameManager;
 
     private int currentBoardNumber = -1; // store the current board number which is just shot by the user
-    
 
+    private HandsAnimationController handsAnimationController;
     // Start is called before the first frame update
     void Start()
     {
@@ -58,19 +58,6 @@ public class Shoot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
-        if(redPoint.activeSelf == true){
-            //start shooting
-            if(Physics.Raycast(gunFront.transform.position,gunFront.transform.forward, out hit, fireDistance)){
-                redPoint.transform.position = hit.point;
-                ShootBullet();
-
-            }else{
-                redPoint.transform.position  = gunFront.transform.position + (gunFront.transform.forward * fireDistance);
-            }
-        }
-
-
         
         
     }
@@ -108,6 +95,7 @@ public class Shoot : MonoBehaviour
                     hit.collider.gameObject.GetComponent<Rigidbody>().useGravity = true;
                     currentBoardNumber =i;
                     currentAns = GunGameBoard[i].tag;
+                    Debug.Log("--Current Ans" + currentAns);
                     StartCoroutine(BoardEffect());
                     break;
                 }
@@ -118,48 +106,71 @@ public class Shoot : MonoBehaviour
             laserLine.SetPosition(1, gunFront.transform.position + (gunFront.transform.forward * fireDistance));
         }
     }
-/*
-    public void ShowBoardName1(){
 
-        View.RPC("PhotonShowBoardName1", RpcTarget.AllBuffered);
-    }
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "Hand") {
 
-    [PunRPC]
-    public void PhotonShowBoardName1(){
-        if (currentBoardNumber == 0){
-            gameManager.GetComponent<GunGameManager>().checkAnswer1("A");
-        }else if (currentBoardNumber == 1){
-            gameManager.GetComponent<GunGameManager>().checkAnswer1("B");
-        }else if (currentBoardNumber == 2){
-            gameManager.GetComponent<GunGameManager>().checkAnswer1("C");
-        }else if (currentBoardNumber == 3){
-            gameManager.GetComponent<GunGameManager>().checkAnswer1("D");
-        }else{
-            gameManager.GetComponent<GunGameManager>().checkAnswer1(null);
+          /*  if (handsAnimationController.currentPressed > 0 || handsAnimationController.currentPressedR > 0)
+            {*/
+                Debug.Log("---Shooting---");
+                //start shooting
+                if (Physics.Raycast(gunFront.transform.position, gunFront.transform.forward, out hit, fireDistance))
+                {
+                    redPoint.transform.position = hit.point;
+                    ShootBullet();
+
+                }
+                else
+                {
+                    redPoint.transform.position = gunFront.transform.position + (gunFront.transform.forward * fireDistance);
+                }
+            //}
         }
     }
+    /*
+     * 
+        public void ShowBoardName1(){
 
-    public void ShowBoardName2(){
-         View.RPC("PhotonShowBoardName2", RpcTarget.AllBuffered);
-    }
-
-    [PunRPC]
-    public void PhotonShowBoardName2(){
-        if (currentBoardNumber == 0){
-            gameManager.GetComponent<GunGameManager>().checkAnswer2("A");
-        }else if (currentBoardNumber == 1){
-            gameManager.GetComponent<GunGameManager>().checkAnswer2("B");
-        }else if (currentBoardNumber == 2){
-            gameManager.GetComponent<GunGameManager>().checkAnswer2("C");
-        }else if (currentBoardNumber == 3){
-            gameManager.GetComponent<GunGameManager>().checkAnswer2("D");
-        }else{
-            gameManager.GetComponent<GunGameManager>().checkAnswer2(null);
+            View.RPC("PhotonShowBoardName1", RpcTarget.AllBuffered);
         }
-    }
+
+        [PunRPC]
+        public void PhotonShowBoardName1(){
+            if (currentBoardNumber == 0){
+                gameManager.GetComponent<GunGameManager>().checkAnswer1("A");
+            }else if (currentBoardNumber == 1){
+                gameManager.GetComponent<GunGameManager>().checkAnswer1("B");
+            }else if (currentBoardNumber == 2){
+                gameManager.GetComponent<GunGameManager>().checkAnswer1("C");
+            }else if (currentBoardNumber == 3){
+                gameManager.GetComponent<GunGameManager>().checkAnswer1("D");
+            }else{
+                gameManager.GetComponent<GunGameManager>().checkAnswer1(null);
+            }
+        }
+
+        public void ShowBoardName2(){
+             View.RPC("PhotonShowBoardName2", RpcTarget.AllBuffered);
+        }
+
+        [PunRPC]
+        public void PhotonShowBoardName2(){
+            if (currentBoardNumber == 0){
+                gameManager.GetComponent<GunGameManager>().checkAnswer2("A");
+            }else if (currentBoardNumber == 1){
+                gameManager.GetComponent<GunGameManager>().checkAnswer2("B");
+            }else if (currentBoardNumber == 2){
+                gameManager.GetComponent<GunGameManager>().checkAnswer2("C");
+            }else if (currentBoardNumber == 3){
+                gameManager.GetComponent<GunGameManager>().checkAnswer2("D");
+            }else{
+                gameManager.GetComponent<GunGameManager>().checkAnswer2(null);
+            }
+        }
 
 
-*/
+    */
     IEnumerator ShotEffect(){
         // play the sound
         
