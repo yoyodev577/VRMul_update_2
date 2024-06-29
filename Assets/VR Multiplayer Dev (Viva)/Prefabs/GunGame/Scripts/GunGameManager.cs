@@ -36,7 +36,7 @@ public class GunGameManager : MonoBehaviour
     public bool IsReadyTimerCoroutine = false;
 
     [SerializeField] private List<Question> questions;
-    [SerializeField] private Question currentQuestion;
+    [SerializeField] public Question currentQuestion;
     [SerializeField] private int currentIndex = 0;
 
 
@@ -84,7 +84,7 @@ public class GunGameManager : MonoBehaviour
         gunGrabOK = false;
         gunGameStart = false;
 
-        InitQuestions();
+        InitGame();
         
     }
 
@@ -104,8 +104,23 @@ public class GunGameManager : MonoBehaviour
             StartGame();
         }
 
-        if (isGameEnd) { 
+        if(isGameStart &&!isGameEnd)
+        {
+            for (int i = 0; i < _playerShoots.Count; i++)
+            {
+                if (_playerShoots[i].isUpdatedScore)
+                {
+                    isRoundEnd = true; 
+                    _playerShoots[i].isUpdatedScore = false;
+                    _playerShoots[i].DisableAllPanels();
+
+                }
+            }
+        }
+
+        if (isGameEnd) {
             //ShowResult
+            Debug.Log("--Show Result---");
         }
 
 
@@ -115,6 +130,7 @@ public class GunGameManager : MonoBehaviour
     {
         _gameState = GameState.Default;
         UpdateBoardText("Press Ready to start the game.");
+        InitQuestions();
     }
 
     void InitQuestions()
@@ -216,6 +232,39 @@ public class GunGameManager : MonoBehaviour
         //ShowResult();
     }
 
+    public void ResetGame() {
+        if (PhotonNetwork.IsConnected)
+            View.RPC("PhotonResetGame", RpcTarget.AllBuffered);
+
+    }
+
+
+    [PunRPC]
+    private void PhotonResetGame()
+    {
+        _gameState = GameState.ResetGame;
+        isGameEnd = false;
+        isGameStart = false;
+        isPlayersReady = false;
+        isReadyToStart = false;
+        isUpdateScore = false;
+        isGameCoroutine = false;
+        IsReadyTimerCoroutine = false;
+
+        for(int  i = 0; i < _playerShoots.Count; i++)
+        {
+            _playerShoots[i].OnReset();
+        }
+
+        isReset = true;
+
+        if (!isResetCoroutine)
+            StartCoroutine(ResetCoroutine());
+
+        InitGame();
+    }
+
+
 
     public void StartTimer()
     {
@@ -242,7 +291,7 @@ public class GunGameManager : MonoBehaviour
 
         foreach(Shoot shoot in _playerShoots)
         {
-            if (shoot.currentAns == questions[currentIndex].answerText)
+            if (shoot.isUpdatedScore)
             {
                 return true;
             }
@@ -255,19 +304,26 @@ public class GunGameManager : MonoBehaviour
 
     public void UpdateScore() {
 
+        Debug.Log("---Update the shooting score---");
         foreach (Shoot shoot in _playerShoots)
         {
             if (shoot.currentAns == questions[currentIndex].answerText)
             {
+
                 if (shoot.playerNum == 0)
+                {
+                    Debug.Log("---Player 0 get the score, Current Score---" + score_0);
                     score_0++;
+                    isUpdateScore = true;
+                }
                 else if (shoot.playerNum == 1)
+                {
                     score_1++;
-                isUpdateScore = true;
+                    Debug.Log("---Player 1 get the score, Current Score---" + score_1);
+                    isUpdateScore = true;
+                }
             }
         }
-
-        isUpdateScore = false;
     }
 
 
@@ -278,13 +334,13 @@ public class GunGameManager : MonoBehaviour
         isGameCoroutine = true;
         if (currentIndex < questions.Count)
         {
+            isRoundEnd = false;
             Debug.Log("---Start Question---" + currentIndex);
             currentQuestion = questions[currentIndex];
             UpdateBoardText(currentQuestion.questionText);
-            while (IsRoundEnd())
-            {
+            while (isRoundEnd) {
                 currentIndex++;
-                yield return new WaitForFixedUpdate();
+                yield return StartCoroutine(SetGameCoroutine());
             }
         }
         else {
@@ -341,13 +397,13 @@ public class GunGameManager : MonoBehaviour
         if (reset.NeedReset){
             reset.NeedReset = false;
             ResetTheGun();
-            ResetGame();
+            ResetGame2();
             
             
         }
     }
 
-    public void ResetGame(){
+    public void ResetGame2(){
         notiPlayer1.SetActive(false);
         notiPlayer2_2.SetActive(false);
         notiPlayer2.SetActive(false);
@@ -487,5 +543,13 @@ public class GunGameManager : MonoBehaviour
     IEnumerator waitForCorrectAns(){
         yield return null;
     }
-  
+
+
+    IEnumerator ResetCoroutine()
+    {
+        isResetCoroutine = true;
+        yield return new WaitForSeconds(2f);
+        isReset = false;
+        isResetCoroutine = false;
+    }
 }

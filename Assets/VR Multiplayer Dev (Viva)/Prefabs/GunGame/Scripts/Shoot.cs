@@ -34,16 +34,26 @@ public class Shoot : MonoBehaviour
   
     PhotonView View;
 
-    public TMP_Text ShootingScore;
+    public TMP_Text ShootingScoreText;
+    public GameObject correctPanel;
+    public GameObject wrongPanel;
 
     public GameObject gameManager;
 
     private int currentBoardNumber = -1; // store the current board number which is just shot by the user
 
     private HandsAnimationController handsAnimationController;
+
+
+    private NetworkedGrabbing networkedGrabbing;
+    public int score = 0;
+    public bool isUpdatedScore;
+    public GunGameManager gunGameManager;
+
     // Start is called before the first frame update
     void Start()
     {
+        networkedGrabbing  = GetComponent<NetworkedGrabbing>();
         // index = 0;  
         redPoint.SetActive(false);
         laserLine = GetComponent<LineRenderer>();
@@ -52,6 +62,7 @@ public class Shoot : MonoBehaviour
         effect = GameObject.Find(nameOfParticalEffect);
         View = GetComponent<PhotonView>();
         startPos = transform.position;
+        gunGameManager = FindObjectOfType<GunGameManager>();
 
     }
 
@@ -96,6 +107,19 @@ public class Shoot : MonoBehaviour
                     currentBoardNumber =i;
                     currentAns = GunGameBoard[i].tag;
                     Debug.Log("--Current Ans" + currentAns);
+                    if (currentAns == gunGameManager.currentQuestion.answerText && !isUpdatedScore)
+                    {
+                        score++;
+                        ShowNoticePanel(true);
+                    }
+                    else {
+                        score += 0;
+                        ShowNoticePanel(false);
+                    }
+                    DisableAllPanels();
+                    isUpdatedScore = true;
+                    ShootingScoreText.text = score.ToString();
+
                     StartCoroutine(BoardEffect());
                     break;
                 }
@@ -106,10 +130,26 @@ public class Shoot : MonoBehaviour
             laserLine.SetPosition(1, gunFront.transform.position + (gunFront.transform.forward * fireDistance));
         }
     }
+    public void ShowNoticePanel(bool isCorrect) {
+        if (isCorrect)
+        {
+            correctPanel.SetActive(true);
+            wrongPanel.SetActive(false);
+        }
+        else {
+            correctPanel.SetActive(false);
+            wrongPanel.SetActive(true);
+        }
+    }
+
+    public void DisableAllPanels() {
+        correctPanel.SetActive(false);
+        wrongPanel.SetActive(false);
+    }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.tag == "Hand") {
+        if (other.gameObject.tag == "Hand" && networkedGrabbing.isBeingHeld) {
 
           /*  if (handsAnimationController.currentPressed > 0 || handsAnimationController.currentPressedR > 0)
             {*/
@@ -128,9 +168,7 @@ public class Shoot : MonoBehaviour
             //}
         }
     }
-    /*
-     * 
-        public void ShowBoardName1(){
+   /*     public void ShowBoardName1(){
 
             View.RPC("PhotonShowBoardName1", RpcTarget.AllBuffered);
         }
@@ -168,9 +206,9 @@ public class Shoot : MonoBehaviour
                 gameManager.GetComponent<GunGameManager>().checkAnswer2(null);
             }
         }
+*/
 
-
-    */
+    
     IEnumerator ShotEffect(){
         // play the sound
         
@@ -207,6 +245,23 @@ public class Shoot : MonoBehaviour
     public void ResetPosition()
     {
         transform.position = startPos;
+    }
+
+
+    public void OnReset() {
+
+        score = 0;
+        isUpdatedScore = false;
+        HideRedPoint();
+        ShootingScoreText.text = score.ToString();
+
+
+        correctPanel.SetActive(false);
+        wrongPanel.SetActive(false);
+
+        if (PhotonNetwork.IsConnected)
+            View.RPC("ResetPosition", RpcTarget.All);
+
     }
 
 }
