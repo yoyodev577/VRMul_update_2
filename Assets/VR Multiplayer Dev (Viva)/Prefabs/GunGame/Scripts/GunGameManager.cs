@@ -110,10 +110,14 @@ public class GunGameManager : MonoBehaviour
             {
                 if (_playerShoots[i].isUpdatedScore)
                 {
-                    isRoundEnd = true; 
-                    _playerShoots[i].isUpdatedScore = false;
-                    _playerShoots[i].DisableAllPanels();
+                    isRoundEnd = true;
+                }
+            }
 
+            if (isRoundEnd) {
+                if (!isGameCoroutine)
+                {
+                    StartCoroutine(SetGameCoroutine());
                 }
             }
         }
@@ -250,10 +254,16 @@ public class GunGameManager : MonoBehaviour
         isUpdateScore = false;
         isGameCoroutine = false;
         IsReadyTimerCoroutine = false;
+        currentIndex = 0;
 
-        for(int  i = 0; i < _playerShoots.Count; i++)
+        for(int i = 0; i < _playerShoots.Count; i++)
         {
             _playerShoots[i].OnReset();
+        }
+
+        for(int i = 0; i < _playerButtons.Count;i++)
+        {
+            _playerButtons[i].ResetButton();
         }
 
         isReset = true;
@@ -334,14 +344,25 @@ public class GunGameManager : MonoBehaviour
         isGameCoroutine = true;
         if (currentIndex < questions.Count)
         {
-            isRoundEnd = false;
+            if (isRoundEnd)
+            {
+                Debug.Log("---Next Round---");
+                for (int i = 0; i < _playerShoots.Count; i++)
+                {
+                    _playerShoots[i].isUpdatedScore = false;
+                    _playerShoots[i].DisableAllPanels();
+                }
+                if(currentIndex < questions.Count - 1)
+                currentIndex++;
+                isRoundEnd = false;
+            }
+
             Debug.Log("---Start Question---" + currentIndex);
+
             currentQuestion = questions[currentIndex];
             UpdateBoardText(currentQuestion.questionText);
-            while (isRoundEnd) {
-                currentIndex++;
-                yield return StartCoroutine(SetGameCoroutine());
-            }
+
+            yield return new WaitForSeconds(5);
         }
         else {
 

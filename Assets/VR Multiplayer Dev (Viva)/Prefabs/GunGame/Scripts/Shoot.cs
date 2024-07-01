@@ -107,16 +107,16 @@ public class Shoot : MonoBehaviour
                     currentBoardNumber =i;
                     currentAns = GunGameBoard[i].tag;
                     Debug.Log("--Current Ans" + currentAns);
+
                     if (currentAns == gunGameManager.currentQuestion.answerText && !isUpdatedScore)
                     {
                         score++;
-                        ShowNoticePanel(true);
+                       // ShowNoticePanel(true);
                     }
                     else {
                         score += 0;
-                        ShowNoticePanel(false);
+                        //ShowNoticePanel(false);
                     }
-                    DisableAllPanels();
                     isUpdatedScore = true;
                     ShootingScoreText.text = score.ToString();
 
@@ -133,12 +133,12 @@ public class Shoot : MonoBehaviour
     public void ShowNoticePanel(bool isCorrect) {
         if (isCorrect)
         {
-            correctPanel.SetActive(true);
-            wrongPanel.SetActive(false);
+            //correctPanel.SetActive(true);
+            //wrongPanel.SetActive(false);
         }
         else {
-            correctPanel.SetActive(false);
-            wrongPanel.SetActive(true);
+            //correctPanel.SetActive(false);
+            //wrongPanel.SetActive(true);
         }
     }
 
