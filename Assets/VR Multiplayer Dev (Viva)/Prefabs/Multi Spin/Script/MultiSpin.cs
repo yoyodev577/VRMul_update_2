@@ -295,6 +295,7 @@ public class MultiSpin : MonoBehaviour
         isSpinnerTriggered = false;
         isMultispinCoroutine = false;
         hasResult = false;
+        spinSpeed = 0;
 
         //close the lid
         lid.transform.localEulerAngles = new Vector3(-165, 0, -90); //close

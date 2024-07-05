@@ -50,6 +50,9 @@ public class Shoot : MonoBehaviour
     public bool isUpdatedScore;
     public GunGameManager gunGameManager;
 
+    public AudioSource correctSource, wrongSource;
+    public AudioClip correctClip, wrongClip;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -102,26 +105,34 @@ public class Shoot : MonoBehaviour
             laserLine.SetPosition(1, hit.point);
 
             for (int i =0; i< GunGameBoard.Length; i++){
-                if(hit.collider.gameObject == GunGameBoard[i]){
+                if (hit.collider.gameObject == GunGameBoard[i])
+                {
                     hit.collider.gameObject.GetComponent<Rigidbody>().useGravity = true;
-                    currentBoardNumber =i;
+                    currentBoardNumber = i;
                     currentAns = GunGameBoard[i].tag;
                     Debug.Log("--Current Ans" + currentAns);
 
-                    if (currentAns == gunGameManager.currentQuestion.answerText && !isUpdatedScore)
+                    if (!isUpdatedScore)
                     {
-                        score++;
-                       // ShowNoticePanel(true);
-                    }
-                    else {
-                        score += 0;
-                        //ShowNoticePanel(false);
-                    }
-                    isUpdatedScore = true;
-                    ShootingScoreText.text = score.ToString();
+                        if (currentAns == gunGameManager.currentQuestion.answerText)
+                        {
+                            score++;
+                            isUpdatedScore = true;
+                            correctSource.PlayOneShot(correctClip);
+                            // ShowNoticePanel(true);
+                        }
+                        else
+                        {
+                            score += 0;
+                            wrongSource.clip = wrongClip;                           
+                            //ShowNoticePanel(false);
+                        }
 
-                    StartCoroutine(BoardEffect());
-                    break;
+                        ShootingScoreText.text = score.ToString();
+
+                        StartCoroutine(BoardEffect());
+                        break;
+                    }
                 }
                 
             }
@@ -149,6 +160,8 @@ public class Shoot : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        if (gunGameManager.isGameEnd || !gunGameManager.isGameStart) return;
+
         if (other.gameObject.tag == "Hand" && networkedGrabbing.isBeingHeld) {
 
           /*  if (handsAnimationController.currentPressed > 0 || handsAnimationController.currentPressedR > 0)

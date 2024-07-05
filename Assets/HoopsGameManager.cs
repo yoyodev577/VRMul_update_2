@@ -61,7 +61,7 @@ public class HoopsGameManager : MonoBehaviour
         "D"
     };
 
-    private AudioSource _audioSource;
+    [SerializeField] private AudioSource _audioSource, _sfxSource;
     [SerializeField] private AudioClip _audioClip;
     void Start()
     {
@@ -294,7 +294,7 @@ public class HoopsGameManager : MonoBehaviour
 
         while (currentSec >= 0)
         {
-            _audioSource.PlayOneShot(_audioClip);
+            _sfxSource.PlayOneShot(_audioClip);
             UpdateBoardText(currentSec.ToString());
             yield return new WaitForSeconds(1f);
             currentSec -= 1;
@@ -302,7 +302,7 @@ public class HoopsGameManager : MonoBehaviour
 
         if (currentSec <= 0)
         {
-            _audioSource.Stop();
+            _sfxSource.Stop();
             IsReadyToStart = false;
             IsGameStart = true;
         }

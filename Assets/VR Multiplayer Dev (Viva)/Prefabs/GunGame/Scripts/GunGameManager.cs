@@ -74,6 +74,8 @@ public class GunGameManager : MonoBehaviour
     private int play1Score =0;
     private int play2Score =0;
 
+    private string resultText;
+
     // Start is called before the first frame update
     void Start()
     {   
@@ -83,6 +85,7 @@ public class GunGameManager : MonoBehaviour
         _playerShoots = FindObjectsOfType<Shoot>().ToList();
         gunGrabOK = false;
         gunGameStart = false;
+        InitQuestions();
 
         InitGame();
         
@@ -114,6 +117,11 @@ public class GunGameManager : MonoBehaviour
                 }
             }
 
+            if (isRoundEnd && currentIndex == questions.Count - 1) { 
+                EndGame();
+            }
+
+
             if (isRoundEnd) {
                 if (!isGameCoroutine)
                 {
@@ -124,6 +132,7 @@ public class GunGameManager : MonoBehaviour
 
         if (isGameEnd) {
             //ShowResult
+            ShowResult();
             Debug.Log("--Show Result---");
         }
 
@@ -134,7 +143,6 @@ public class GunGameManager : MonoBehaviour
     {
         _gameState = GameState.Default;
         UpdateBoardText("Press Ready to start the game.");
-        InitQuestions();
     }
 
     void InitQuestions()
@@ -233,7 +241,6 @@ public class GunGameManager : MonoBehaviour
 
         _gameState = GameState.EndGame;
         isGameEnd = true;
-        //ShowResult();
     }
 
     public void ResetGame() {
@@ -254,7 +261,10 @@ public class GunGameManager : MonoBehaviour
         isUpdateScore = false;
         isGameCoroutine = false;
         IsReadyTimerCoroutine = false;
+        isRoundEnd = false;
+
         currentIndex = 0;
+        resultText = string.Empty;
 
         for(int i = 0; i < _playerShoots.Count; i++)
         {
@@ -312,28 +322,27 @@ public class GunGameManager : MonoBehaviour
         return false;
     }
 
-    public void UpdateScore() {
+    public void ShowResult() {
 
         Debug.Log("---Update the shooting score---");
-        foreach (Shoot shoot in _playerShoots)
+        if (_playerShoots.Count > 0)
         {
-            if (shoot.currentAns == questions[currentIndex].answerText)
+            if (_playerShoots[0].score > _playerShoots[1].score)
             {
-
-                if (shoot.playerNum == 0)
-                {
-                    Debug.Log("---Player 0 get the score, Current Score---" + score_0);
-                    score_0++;
-                    isUpdateScore = true;
-                }
-                else if (shoot.playerNum == 1)
-                {
-                    score_1++;
-                    Debug.Log("---Player 1 get the score, Current Score---" + score_1);
-                    isUpdateScore = true;
-                }
+                resultText = "Game Ends.\nPlayer" +_playerShoots[0].playerNum+ " wins";
             }
+            else if (_playerShoots[0].score == _playerShoots[1].score)
+            {
+                resultText = "Game Ends.The game is fair";
+            }
+            else if (_playerShoots[0].score < _playerShoots[1].score)
+            {
+                resultText = "Game Ends.\nPlayer"+ _playerShoots[1].playerNum + " wins";
+            }
+
+
         }
+        UpdateBoardText(resultText);
     }
 
 
@@ -363,10 +372,6 @@ public class GunGameManager : MonoBehaviour
             UpdateBoardText(currentQuestion.questionText);
 
             yield return new WaitForSeconds(5);
-        }
-        else {
-
-            isGameEnd = true;
         }
         isGameCoroutine = false;
     }
@@ -504,8 +509,8 @@ public class GunGameManager : MonoBehaviour
         View.RPC("PhotonCheckAnswer1", RpcTarget.AllBuffered,playerAns);
     }
     [PunRPC]
-    public void PhotonCheckAnswer1(string playerAns){
-        if(playerAns == answer){
+    public void PhotonCheckAnswer1(string playerAns2){
+        if(playerAns2 == answer){
             roundEnd = true;
             if(updateWinner){
                 updateWinner = false;
