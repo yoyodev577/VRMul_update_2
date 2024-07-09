@@ -62,14 +62,17 @@ public class SpawnManager : MonoBehaviourPunCallbacks
 {
     public Transform spawnPosition;
 
+    public List<GameObject> spawnList = new List<GameObject>();
+
     #region Unity Methods
     // Start is called before the first frame update
     void Start()
-    {   
+    {
+        spawnList.Clear();
         SpawnPlayer();
     }
     #endregion
-    
+
 
 
     #region Private Methods
@@ -78,7 +81,13 @@ public class SpawnManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom == null)
             return;
 
-        PhotonNetwork.Instantiate("NetworkedVRPlayerPrefab", spawnPosition.position, spawnPosition.localRotation, 0);
+        GameObject g = PhotonNetwork.Instantiate("NetworkedVRPlayerPrefab", spawnPosition.position, spawnPosition.localRotation, 0);
+        
+        if (!spawnList.Contains(g))
+        {
+            spawnList.Add(g);
+        }
+
     }
     #endregion
 }

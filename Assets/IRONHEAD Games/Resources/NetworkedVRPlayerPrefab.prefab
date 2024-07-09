@@ -3777,6 +3777,7 @@ GameObject:
   - component: {fileID: 4951164431026607019}
   - component: {fileID: 4951164431026607018}
   - component: {fileID: 1533696365294065995}
+  - component: {fileID: 8225018487186363832}
   m_Layer: 10
   m_Name: XR Origin
   m_TagString: Untagged
@@ -3995,6 +3996,27 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: -6493913391331992944, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+--- !u!135 &8225018487186363832
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4951164431026607023}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &4951164431032722624
 GameObject:
   m_ObjectHideFlags: 0
