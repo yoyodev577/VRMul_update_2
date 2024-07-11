@@ -73,16 +73,25 @@ public class HoopsGameManager : MonoBehaviour
         InitGame();
     }
 
+
     // Update is called once per frame
     void Update()
     {
+        if (PhotonNetwork.IsConnected)
+            _view.RPC("PhotonUpdate", RpcTarget.AllBuffered);
+    }
+
+    [PunRPC]
+    public void PhotonUpdate() {
         // when players get ready, the timer starts.
-        if (isPlayersReady && IsReadyToStart) {
+        if (isPlayersReady && IsReadyToStart)
+        {
             StartTimer();
         }
 
         // after the timer, it start the machines and show questions.
-        if (IsGameStart) {
+        if (IsGameStart)
+        {
             HoopsStart();
             ShowQuestion();
         }
@@ -223,6 +232,7 @@ public class HoopsGameManager : MonoBehaviour
 
 
     public void StartTimer() {
+
         if (PhotonNetwork.IsConnected)
             _view.RPC("PhotonStartTimer", RpcTarget.AllBuffered);
 

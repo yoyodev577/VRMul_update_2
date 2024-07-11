@@ -33,38 +33,60 @@ namespace GoneWithTheFire
         // Start is called before the first frame update
         void Start()
         {
+            view = GetComponent<PhotonView>();
             spawnManager = FindObjectOfType<SpawnManager>();
             videoPlayer = FindObjectOfType<VideoPlayer>();
             videoPanel.SetActive(true);
             boardPanel.SetActive(false);
-
-            if(!isVideoPlayed)
-            {
-                if(!isVideoCoroutine)
-                    StartCoroutine(VideoCoroutine());
-
-            }
-
 
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (isVideoPlayed && !videoPlayer.isPlaying) { 
-                if(!isReadyToStart)
+            if (PhotonNetwork.IsConnected)
+                view.RPC("PhotonUpdate", RpcTarget.AllBuffered);
+
+        }
+
+        [PunRPC]
+        public void PhotonUpdate() {
+
+            if (isVideoPlayed && !videoPlayer.isPlaying)
+            {
+                if (!isReadyToStart)
                 {
                     videoPanel.SetActive(false);
                     boardPanel.SetActive(true);
                     isReadyToStart = true;
-                    if (!isReadyTimerCoroutine) {
+                    if (!isReadyTimerCoroutine)
+                    {
                         StartCoroutine(SetReadyTimerCoroutine(5));
                     }
                 }
-            
+
+            }
+        }
+
+        public void StartGame()
+        {
+            if (PhotonNetwork.IsConnected)
+                view.RPC("PhotonStartGame", RpcTarget.AllBuffered);
+        }
+
+        [PunRPC]
+        private void PhotonStartGame()
+        {
+            if (!isVideoPlayed)
+            {
+                if (!isVideoCoroutine)
+                    StartCoroutine(VideoCoroutine());
+
             }
 
         }
+
+
 
         public void EndGame() {
 

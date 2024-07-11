@@ -3958,6 +3958,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPosition: {fileID: 461343111}
+  spawnList: []
 --- !u!1 &900520350 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8041839799988868923, guid: d5c2b00499908fe44beaeef5b38bd8b6, type: 3}
@@ -6357,6 +6358,18 @@ PrefabInstance:
     - target: {fileID: 6701735653210293824, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
       propertyPath: m_Name
       value: Start Panel
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527506015760679732, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.36098993
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527506015760679732, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.36099002
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527506015760679732, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.36099002
       objectReference: {fileID: 0}
     - target: {fileID: 8545356033332532806, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
       propertyPath: sceneViewId

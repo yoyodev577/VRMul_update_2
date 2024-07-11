@@ -13,6 +13,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6217933681027964154, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217933681027964154, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217933681027964154, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6217933681027964154, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -52,9 +64,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6217933681027964154, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6701735653210293824, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
       propertyPath: m_Name
-      value: Start Panel
+      value: Start Panel Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527506015760679732, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.36098993
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527506015760679732, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.36099002
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527506015760679732, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.36099002
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527506015760679732, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527506015760679732, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.079
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527506015760679732, guid: f3af5aa49e159ee47ba1df55db2a8d25, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.393
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

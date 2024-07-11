@@ -94,8 +94,12 @@ public class GunGameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if(PhotonNetwork.IsConnected)
-        //View.RPC("PhotonUpdate", RpcTarget.AllBuffered);
+        if(PhotonNetwork.IsConnected)
+        View.RPC("PhotonUpdate", RpcTarget.AllBuffered);
+    }
+
+    [PunRPC]
+    public void PhotonUpdate() {
 
         if (isPlayersReady && isReadyToStart)
         {
@@ -107,7 +111,7 @@ public class GunGameManager : MonoBehaviour
             StartGame();
         }
 
-        if(isGameStart &&!isGameEnd)
+        if (isGameStart && !isGameEnd)
         {
             for (int i = 0; i < _playerShoots.Count; i++)
             {
@@ -117,12 +121,14 @@ public class GunGameManager : MonoBehaviour
                 }
             }
 
-            if (isRoundEnd && currentIndex == questions.Count - 1) { 
+            if (isRoundEnd && currentIndex == questions.Count - 1)
+            {
                 EndGame();
             }
 
 
-            if (isRoundEnd) {
+            if (isRoundEnd)
+            {
                 if (!isGameCoroutine)
                 {
                     StartCoroutine(SetGameCoroutine());
@@ -130,12 +136,12 @@ public class GunGameManager : MonoBehaviour
             }
         }
 
-        if (isGameEnd) {
+        if (isGameEnd)
+        {
             //ShowResult
             ShowResult();
             Debug.Log("--Show Result---");
         }
-
 
     }
 
@@ -167,6 +173,7 @@ public class GunGameManager : MonoBehaviour
         if (PhotonNetwork.IsConnected)
             View.RPC("PhotonWaitForPlayersReady", RpcTarget.AllBuffered);
     }
+
     [PunRPC]
     private void PhotonWaitForPlayersReady()
     {
@@ -407,7 +414,7 @@ public class GunGameManager : MonoBehaviour
 
 
 
-    [PunRPC]
+   /* [PunRPC]
     public void PhotonUpdate(){
          //lock the position of the gun
         if (!gunGrabOK){
@@ -427,7 +434,7 @@ public class GunGameManager : MonoBehaviour
             
             
         }
-    }
+    }*/
 
     public void ResetGame2(){
         notiPlayer1.SetActive(false);
