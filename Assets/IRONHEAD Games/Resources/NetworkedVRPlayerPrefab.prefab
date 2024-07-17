@@ -2639,6 +2639,7 @@ GameObject:
   - component: {fileID: 4951164429965144044}
   - component: {fileID: 5569346926851708498}
   - component: {fileID: 3062065139203760051}
+  - component: {fileID: 3538809387546609532}
   m_Layer: 0
   m_Name: NetworkedVRPlayerPrefab
   m_TagString: Untagged
@@ -2755,6 +2756,21 @@ MonoBehaviour:
   - {fileID: 5750795164620176152, guid: 893fc32fb6dfd394b9a136b67d829e20, type: 3}
   - {fileID: 5750795164620176152, guid: c4539959623107548af3ecdaa8d8a387, type: 3}
   nonNetworkedGameobjects: {fileID: 5520951590943803023}
+--- !u!114 &3538809387546609532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4951164429965144051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b98aaf82b10762448a822dfb0b97c26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  photonView: {fileID: 4951164429965144046}
+  networkSetup: {fileID: 3062065139203760051}
+  nameStr: auto
 --- !u!1 &4951164430440280292
 GameObject:
   m_ObjectHideFlags: 0

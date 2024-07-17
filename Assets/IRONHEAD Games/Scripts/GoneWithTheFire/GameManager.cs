@@ -15,6 +15,8 @@ namespace GoneWithTheFire
 
         public bool isVideoPlayed = false;
         public bool isVideoCoroutine = false;
+        public bool isAnimationPlayed = false;
+        public bool isAnimationCoroutine = false;
         public bool isReadyTimerCoroutine = false;
         public bool isReadyToStart = false;
         public bool isGameStart = false;
@@ -28,8 +30,13 @@ namespace GoneWithTheFire
         public GameObject videoPanel, boardPanel;
         public TMP_Text boardText;
 
+        public GameObject bottleObj;
+        public Animator bottleAnimator;
+        public GameObject fireObj;
+
+
         public AudioSource bgmSource, sfxSource;
-        public AudioClip countDownClip;
+        public AudioClip countDownClip, fallClip, fireClip;
         // Start is called before the first frame update
         void Start()
         {
@@ -38,12 +45,14 @@ namespace GoneWithTheFire
             videoPlayer = FindObjectOfType<VideoPlayer>();
             videoPanel.SetActive(true);
             boardPanel.SetActive(false);
+            //videoPlayer.Play();
 
         }
 
         // Update is called once per frame
         void Update()
         {
+           // PhotonUpdate();
             if (PhotonNetwork.IsConnected)
                 view.RPC("PhotonUpdate", RpcTarget.AllBuffered);
 
@@ -58,10 +67,16 @@ namespace GoneWithTheFire
                 {
                     videoPanel.SetActive(false);
                     boardPanel.SetActive(true);
-                    isReadyToStart = true;
-                    if (!isReadyTimerCoroutine)
+
+                    view.RPC("PhotonPlayAnimation", RpcTarget.All);
+
+                    if (isAnimationPlayed)
                     {
-                        StartCoroutine(SetReadyTimerCoroutine(5));
+                        isReadyToStart = true;
+                        if (!isReadyTimerCoroutine)
+                        {
+                            StartCoroutine(SetReadyTimerCoroutine(5));
+                        }
                     }
                 }
 
@@ -70,8 +85,28 @@ namespace GoneWithTheFire
 
         public void StartGame()
         {
+           //PhotonStartGame();
+
             if (PhotonNetwork.IsConnected)
                 view.RPC("PhotonStartGame", RpcTarget.AllBuffered);
+        }
+
+        [PunRPC]
+        private void PhotonPlayAnimation() {
+
+            bottleObj.SetActive(true);
+            bottleAnimator = bottleObj.GetComponent<Animator>();
+            bottleAnimator.SetTrigger("Fall");
+            if(!sfxSource.isPlaying)
+            sfxSource.PlayOneShot(fallClip);
+            if (bottleAnimator.GetAnimatorTransitionInfo(0).normalizedTime >0.5f) 
+            {
+                sfxSource.PlayOneShot(fireClip);
+                fireObj.SetActive(true);
+                isAnimationPlayed = true;
+            }
+
+        
         }
 
         [PunRPC]
@@ -111,6 +146,7 @@ namespace GoneWithTheFire
         [PunRPC]
         private void PhotonResetGame()
         {
+            isAnimationPlayed = false;
             isReadyTimerCoroutine = false;
             isVideoCoroutine = false;
             isReadyToStart = false;
@@ -131,7 +167,7 @@ namespace GoneWithTheFire
 
         IEnumerator VideoCoroutine() {
             isVideoCoroutine = true;
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(1);
             videoPlayer.Play();
             yield return new WaitUntil(()=>!videoPlayer.isPlaying);
             isVideoPlayed = true;
