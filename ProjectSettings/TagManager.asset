@@ -13,6 +13,7 @@ TagManager:
   - D
   - Start Button
   - Ready Button
+  - hammer
   layers:
   - Default
   - TransparentFX

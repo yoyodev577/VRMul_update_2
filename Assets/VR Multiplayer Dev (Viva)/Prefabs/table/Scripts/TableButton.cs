@@ -92,7 +92,7 @@ public class TableButton : MonoBehaviour
         if (PhotonNetwork.IsConnected)
             _view.RPC("FlashButton", RpcTarget.AllBuffered, isPressed);
 
-        FlashButton(isPressed);
+       // FlashButton(isPressed);
 
         yield return new WaitForSeconds(0.5f);
         IsButtonCoroutine = false;
