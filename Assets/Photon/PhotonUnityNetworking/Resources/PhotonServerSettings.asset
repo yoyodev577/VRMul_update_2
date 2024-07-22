@@ -90,6 +90,10 @@ MonoBehaviour:
   - ResetPosition
   - Update
   - PhotonPlayAnimation
+  - PopMoes
+  - RandomPickMoes
+  - StartEngine
+  - HideAllMoes
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

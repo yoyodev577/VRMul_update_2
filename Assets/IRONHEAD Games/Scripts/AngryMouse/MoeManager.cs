@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System.Linq;
+using AngryMouse;
 
 public class MoeManager : MonoBehaviour
 {
+    public PhotonView view;
+    public GameManager manager;
     public List<Moe> moes;
     public List<Moe> temp;
     public List<Moe> popList = new List<Moe>();
@@ -13,9 +16,12 @@ public class MoeManager : MonoBehaviour
     public bool isEnabled = false;
     public int maxMoes = 4;
 
+    public bool isCoroutine = false;
+
     // Start is called before the first frame update
     void Start()
     {
+        view = GetComponent<PhotonView>();
         HideAllMoes();
     }
 
@@ -24,15 +30,26 @@ public class MoeManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            RandomPickMoes();
-            PopMoes();
-        }else  if(Input.GetKeyDown(KeyCode.Q))
-        {
-            HideAllMoes();
+            SetEngine(true);
         }
 
     }
 
+    public void SetEngine(bool _isEnabled) {
+
+        isEnabled = _isEnabled;
+
+        if( _isEnabled &&!isCoroutine)
+        {
+            StartCoroutine(MoeCoroutine());
+        }
+        else if( !_isEnabled && isCoroutine )
+        {
+            StopAllCoroutines();
+        }
+
+    }
+    [PunRPC]
     public void RandomPickMoes()
     {
         popList.Clear();
@@ -53,6 +70,7 @@ public class MoeManager : MonoBehaviour
         }
     }
 
+    [PunRPC]
     public void PopMoes() {
         if (popList.Count == 0) return;
 
@@ -65,6 +83,7 @@ public class MoeManager : MonoBehaviour
 
     }
 
+    [PunRPC]
     public void HideAllMoes() 
     { 
         for(int i = 0; i < moes.Count; i++)
@@ -73,6 +92,25 @@ public class MoeManager : MonoBehaviour
             moes[i].SetHitStatus(false);
         }
     
+    }
+
+    public IEnumerator MoeCoroutine() {
+        isCoroutine = true;
+        while (isEnabled)
+        {
+            RandomPickMoes();
+            //view.RPC("RandomPickMoes", RpcTarget.AllBuffered);
+            yield return new WaitForFixedUpdate();
+
+            PopMoes();
+            //view.RPC("PopMoes", RpcTarget.AllBuffered);
+
+            yield return new WaitForSeconds(3);
+            HideAllMoes();
+            //view.RPC("HideAllMoes", RpcTarget.AllBuffered);
+        }
+        isCoroutine = false;
+
     }
 
 }

@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using TMPro;
+using System.Linq;
+using HTC.UnityPlugin.Vive.VIUExample;
 
 namespace AngryMouse
 {
     public class GameManager : MonoBehaviour
     {
         public PhotonView view;
-        public MoeManager moeManager;
+        public List<MoeManager> moeManagers;
 
         //Questions
         public List<Question> questions;
@@ -36,7 +38,8 @@ namespace AngryMouse
         void Start()
         {
             view = GetComponent<PhotonView>();
-            moeManager = FindObjectOfType<MoeManager>();
+            moeManagers = FindObjectsOfType<MoeManager>().ToList();
+            InitQuestions();
         }
 
         // Update is called once per frame
@@ -125,9 +128,10 @@ namespace AngryMouse
         [PunRPC]
         private void PhotonHoopsStart()
         {
-            Debug.Log("---Start the game---");
-
-
+            foreach(MoeManager m in  moeManagers)
+            {
+                m.SetEngine(true);
+            }
         }
 
 

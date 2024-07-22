@@ -26,6 +26,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/IRONHEAD Games/Scenes/GoneWithTheFire.unity
     guid: 7a2205e1c0ab28b4097e1ca3dd0109ef
+  - enabled: 1
+    path: Assets/IRONHEAD Games/Scenes/Yoyo/AngryMouse.unity
+    guid: fdbf07db84e36bb42b33d2a2eec55f74
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 3235bec8251cb7c42b33edef251b00b9, type: 2}
     Unity.XR.OpenVR.Settings: {fileID: 0}
